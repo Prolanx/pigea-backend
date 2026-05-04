@@ -13,6 +13,7 @@ import { initFirebase } from '@adapters/storage/init.js';
 
 
 
+
 // Main application bootstrap
 async function bootstrap() {
   // Create Express application

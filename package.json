@@ -8,6 +8,13 @@
     "start": "tsx src/server.js",
     "dev": "tsx watch src/server.js"
   },
+    "imports": {
+    "#modules/*": "./src/modules/*.js",
+    "#common/*": "./src/common/*.js",
+    "#adapters/*": "./src/adapters/*.js",
+    "#app/*": "./src/app/*.js",
+    "#database/*": "./src/database/*.js"
+  },
   "author": "Prolanx",
   "license": "ISC",
   "dependencies": {
@@ -22,6 +29,7 @@
     "mongoose": "^8.0.0",
     "node-cron": "^4.2.1",
     "nodemailer": "^6.10.1",
+    "serverless-http": "^4.0.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
