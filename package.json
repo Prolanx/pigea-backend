@@ -5,16 +5,17 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "tsx src/server.js",
+    "start": "node --loader esm-module-alias/loader src/server.js",
     "dev": "tsx watch src/server.js"
   },
-    "imports": {
-    "#modules/*": "./src/modules/*.js",
-    "#common/*": "./src/common/*.js",
-    "#adapters/*": "./src/adapters/*.js",
-    "#app/*": "./src/app/*.js",
-    "#database/*": "./src/database/*.js"
+   "aliases": {
+    "@modules": "./src/modules",
+    "@adapters": "./src/adapters",
+    "@database": "./src/database",
+    "@common": "./src/common",
+    "@app": "./src/app"
   },
+  
   "author": "Prolanx",
   "license": "ISC",
   "dependencies": {

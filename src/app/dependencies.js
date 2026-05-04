@@ -13,7 +13,6 @@ import InboxModule from '@modules/inbox/_index.js';
 import SocialModule from '@modules/social/_index.js';
 import MarketingModule from '@modules/marketing/_index.js';
 import BusinessInfoModule from '@modules/business-info/_index.js';
-import StatModule from '@modules/stat/_index.js';
 import TransactionModule from '@modules/transaction/_index.js';
 import TransactionDAOInstance from '@modules/transaction/dao/transaction-dao/_index.js';
 
