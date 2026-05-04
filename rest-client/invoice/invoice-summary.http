@@ -1,0 +1,25 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+
+GET {{apiUrl}}/invoices/summary
+Authorization: Bearer {{accessToken}}
+
+### Get invoice summary - merchant auth required
+
+### Expected response shape
+// {
+//   "status": "success",
+//   "message": "Invoice summary retrieved successfully",
+//   "data": {
+//     "totalCount": 10,
+//     "totalAmount": 12345.67,
+//     "paidCount": 6,
+//     "unpaidCount": 4,
+//     "paidAmount": 7890.12,
+//     "unpaidAmount": 4455.55,
+//     "offlineCount": 2,
+//     "onlineCount": 8
+//   }
+// }

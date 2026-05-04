@@ -1,0 +1,86 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/auth
+
+# Save access token from login response here
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NjMzMTM2LCJleHAiOjE3Njc4MDU5MzZ9.KUej0UDjck0erjAE4rTZuecevs3FS75cpdka72AbGtY
+# Save refresh token from database (for testing purposes only)
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+###############################################
+# REFRESH ACCESS TOKEN
+###############################################
+
+### Refresh Access Token - Valid Refresh Token
+POST {{apiUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+### Refresh Access Token - Invalid Refresh Token
+POST {{apiUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "invalid-token-here"
+}
+
+###
+
+### Refresh Access Token - Expired Refresh Token
+POST {{apiUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "expired-refresh-token"
+}
+
+###
+
+### Refresh Access Token - Missing Token (Validation Error)
+POST {{apiUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  
+}
+
+###############################################
+# LOGOUT
+###############################################
+
+### Logout - With Valid Access Token
+# Only access token needed (in Authorization header)
+# Works even if access token is expired!
+POST {{apiUrl}}/logout
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Logout - With Expired Access Token (Still Works!)
+# The logout endpoint accepts expired tokens
+POST {{apiUrl}}/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired-token-here
+
+###
+
+### Logout - No Token (Should Fail)
+POST {{apiUrl}}/logout
+
+###
+
+### Logout - Invalid Token Format (Should Fail)
+POST {{apiUrl}}/logout
+Authorization: Bearer invalid-malformed-token
+
+###
+# NOTES:
+# - Client only needs to send access token (in Authorization header)
+# - NO refresh token needed in request body
+# - Logout works even if access token has expired
+# - Backend invalidates refresh token in database
+# - Client should delete both tokens from storage after successful logout
+

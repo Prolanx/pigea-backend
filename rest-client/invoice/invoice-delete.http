@@ -1,0 +1,18 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY5NDI2NDYxLCJleHAiOjE3Njk1OTkyNjF9.Jrfjtkz91Rj_Bj9r99ctC2nUlPVqOrJDjpuM8ZgmqAA
+@invoiceId=6977856a532eb94a16250309
+
+DELETE {{apiUrl}}/invoices/{{invoiceId}}
+Authorization: Bearer {{accessToken}}
+
+### Hard delete all versions of the invoice (merchant-scoped)
+
+### Example response
+// 200 OK
+// {
+//   "status": "success",
+//   "message": "Invoice deleted successfully",
+//   "data": { /* last known invoice data */ }
+// }

@@ -1,0 +1,9 @@
+export { default as createContactDtoSchema } from './create-contact.validation.js';
+export { default as updateContactDtoSchema } from './update-contact.validation.js';
+export { default as createContactTypeDtoSchema } from './create-contact-type.validation.js';
+export { default as updateContactTypeDtoSchema } from './update-contact-type.validation.js';
+export { default as createFieldDtoSchema } from './create-field.validation.js';
+export { default as updateFieldDtoSchema } from './update-field.validation.js';
+export { default as createStatusDtoSchema } from './create-status.validation.js';
+export { default as updateStatusDtoSchema } from './update-status.validation.js';
+export { default as sendMessageDtoSchema } from './send-message.validation.js';

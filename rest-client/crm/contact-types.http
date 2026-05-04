@@ -1,0 +1,88 @@
+### CRM - Contact Types
+### Define templates for different types of contacts
+
+@baseUrl = http://localhost:3000
+@merchantToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NjMzMTM2LCJleHAiOjE3Njc4MDU5MzZ9.KUej0UDjck0erjAE4rTZuecevs3FS75cpdka72AbGtY
+###### john may token
+####@merchantToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTVhODIwYTg3NDM3YWJmYjg2NzFiZmIiLCJlbWFpbCI6ImpvaG4ubWF5QGtpaGFzbC5jb20iLCJyb2xlIjoibWVyY2hhbnQiLCJpYXQiOjE3Njc1Mzk1NTMsImV4cCI6MTc2NzcxMjM1M30.jb17wWrWvdro0MSUcUsyoWIrHfPxJYvWMpDUVEMx2mY
+
+
+### Create contact type - B2B Client
+# Note: First create "Industry" custom field, then use its MongoDB _id here
+POST {{baseUrl}}/crm/contact-types
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "B2B Client",
+  "description": "Business-to-business customers",
+  "fields": [
+    { "id": "sys_name", "required": true },
+    { "id": "sys_email", "required": true }
+  ]
+}
+
+#### Create contact type - Individual Customer
+#### Note: Use MongoDB _id from your custom "Preferred Contact Method" field
+POST {{baseUrl}}/crm/contact-types
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Individual Customer",
+  "description": "Direct consumers",
+  "fields": [
+    { "id": "sys_name", "required": true },
+    { "id": "695a4573d9b1b90a9aa12d4a", "required": false }
+  ]
+}
+
+### Get all contact types
+GET {{baseUrl}}/crm/contact-types
+Authorization: Bearer {{merchantToken}}
+
+### Get single contact type by ID
+GET {{baseUrl}}/crm/contact-types/695a75ce0885b07cee3cd33a
+Authorization: Bearer {{merchantToken}}
+
+### Update contact type
+PATCH {{baseUrl}}/crm/contact-types/695cb1fca841a890b8d75bdb
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "description": "Updated description for contact type",
+  "fields": [
+    { "id": "sys_name", "required": true }
+  ]
+}
+
+### Delete contact type (cascades to contacts)
+DELETE {{baseUrl}}/crm/contact-types/695a75ce0885b07cee3cd33a
+Authorization: Bearer {{merchantToken}}
+
+### Error - Create type with non-existent field (should fail)
+POST {{baseUrl}}/crm/contact-types
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Test Type",
+  "description": "Will fail",
+  "fields": [
+    { "id": "nonexistent_field", "required": true }
+  ]
+}
+
+### Error - Duplicate name (should fail)
+POST {{baseUrl}}/crm/contact-types
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "B2B Client",
+  "description": "Duplicate name",
+  "fields": [
+    { "id": "sys_email", "required": true }
+  ]
+}

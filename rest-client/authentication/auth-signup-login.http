@@ -1,0 +1,62 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/auth
+
+###############################################
+# SIGNUP - Register New Account
+###############################################
+
+### Signup - New Merchant (Role automatically assigned)
+POST {{apiUrl}}/signup
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "May",
+  "email": "john.may@kihasl.com",
+  "password": "12345678"
+}
+
+###############################################
+# LOGIN
+###############################################
+
+### Login - Success (Verified Account)
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "temi.daramola@kihasl.com",
+  "password": "123456789"
+}
+
+###############################################
+### Login - Unverified Account (Will send verification code if the current code in the mail has expired)
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "joe.rogan@kihasl.com",
+  "password": "12345678"
+}
+
+###
+
+### Login - Invalid Credentials
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "wrong@example.com",
+  "password": "WrongPassword"
+}
+
+###
+
+### Login - Missing Fields (Validation Error)
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}

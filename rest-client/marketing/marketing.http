@@ -1,0 +1,22 @@
+### Subscribe (add or update contact in Brevo)
+# Body: { name, email }
+POST http://localhost:3000/marketing/subscribe
+
+Content-Type: application/json
+
+{
+  "name": "Temitope",
+  "email": "temidaramola7@gmail.com"
+}
+
+### Contact (send enquiry to support inbox via Brevo transactional email)
+# Body: { firstName, lastName, email, message }
+POST http://localhost:3000/marketing/contact
+Content-Type: application/json
+
+{
+  "firstName": "Falaju",
+  "lastName": "Anuoluwa",
+  "email": "falajuanuoluwa@gmail.com",
+  "message": "Hello, I'd like to know more about Pigea app and its features."
+}

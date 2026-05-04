@@ -1,0 +1,157 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/categories
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NDU5Mzg2LCJleHAiOjE3Njc2MzIxODZ9.zauV3Ihbe_XyOdBT2SWKeFBntPDQuIvUMEdA0_CgYIY
+
+# Save category ID from create response here
+@categoryId = 695943b107c845e8aaa34495
+
+###############################################
+# UPDATE CATEGORY
+###############################################
+
+### Update Category - Success (Update all fields)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Smart Phone & Accessories",
+  "imageUrl": "https://images.unsplash.com/photo-1713470599405-3ca0ae1363f8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fE1vYmlsZSUyMFBob25lc3xlbnwwfHwwfHx8MA%3D%3D",
+  "description": "Smartphones, flip phones, chargers, power banks, wireless and wired earphones, cases, and other mobile accessories."
+}
+
+###
+
+### Update Category - Success (Update name only)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Smart Phone & Mobile Accessories"
+}
+
+###
+
+### Update Category - Success (Update description only)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "description": "Latest electronic devices and tech accessories"
+}
+
+###
+
+### Update Category - Success (Update image URL only)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "imageUrl": "https://example.com/images/new-electronics.jpg"
+}
+
+###
+
+### Update Category - Duplicate Name (Conflict)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Clothing"
+}
+
+###
+
+### Update Category - Not Found
+PUT {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d1f
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Non-existent Category"
+}
+
+###
+
+### Update Category - Invalid ID Format (Validation Error)
+PUT {{apiUrl}}/invalid-id-format
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Invalid ID"
+}
+
+###
+
+### Update Category - Invalid Image URL (Validation Error)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "imageUrl": "not-a-valid-url"
+}
+
+###
+
+### Update Category - Name Too Short (Validation Error)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "A"
+}
+
+###
+
+### Update Category - Name Too Long (Validation Error)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "This is an extremely long category name that exceeds the maximum allowed length of one hundred characters for testing"
+}
+
+###
+
+### Update Category - Another Merchant's Category (Permission Denied - 403)
+# Note: If the category exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual category ID from another merchant's account to test
+PUT {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d22
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Cannot Update This"
+}
+
+###
+
+### Update Category - Unauthenticated (No Bearer Token)
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Update"
+}
+
+###
+
+### Update Category - Invalid Token
+PUT {{apiUrl}}/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer invalid-token-here
+
+{
+  "name": "Invalid Token Update"
+}

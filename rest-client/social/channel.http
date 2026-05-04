@@ -1,0 +1,26 @@
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+@channelId = YOUR_CHANNEL_ID_HERE
+
+### Get all connected social channels
+GET http://localhost:3000/social/channels
+Authorization: Bearer {{accessToken}}
+
+console.log
+
+### Get OAuth URL for a platform
+GET http://localhost:3000/social/channels/oauth-url/instagram
+Authorization: Bearer {{accessToken}}
+
+### Connect a social channel (example: Instagram)
+POST http://localhost:3000/social/channels/connect
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "platform": "instagram",
+  "authCode": "SAMPLE_AUTH_CODE"
+}
+
+### Disconnect a social channel
+POST http://localhost:3000/social/channels/{{channelId}}/disconnect
+Authorization: Bearer {{accessToken}}

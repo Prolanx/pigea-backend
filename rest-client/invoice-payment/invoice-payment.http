@@ -1,0 +1,16 @@
+##### Sample variables
+@invoiceNumber=INV-9ABD-000029
+@transactionId=TXN-1234567892
+
+### Invoice payment decode request
+GET http://localhost:3000/invoices/query?invoiceNumber={{invoiceNumber}}
+Content-Type: application/json
+
+### Invoice payment simulate success
+POST http://localhost:3000/invoices/confirm-payment
+Content-Type: application/json
+
+{
+  "invoiceNumber": "{{invoiceNumber}}",
+  "transactionId": "{{transactionId}}"
+}

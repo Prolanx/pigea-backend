@@ -1,0 +1,4 @@
+﻿### PRODUCT SUCCESS AND ERROR REQUESTS
+# This file has been moved to a consolidated success file.
+# Use product-success.http for create/update success scenarios.
+# Use product-create-error.http and product-update-error.http for validation and error cases.

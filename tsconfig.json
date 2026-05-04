@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@modules/*": ["src/modules/*"],
+      "@common/*": ["src/common/*"],
+      "@adapters/*": ["src/adapters/*"],
+      "@app/*": ["src/app/*"],
+      "@database/*": ["src/database/*"]
+    }
+  },
+}

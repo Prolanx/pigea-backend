@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NDU5Mzg2LCJleHAiOjE3Njc2MzIxODZ9.zauV3Ihbe_XyOdBT2SWKeFBntPDQuIvUMEdA0_CgYIY
+
+# Save product ID from create response here
+@productId = 695958150528a287f4b2444c
+
+# Save category ID for filtering
+@categoryId = 695943b107c845e8aaa34495
+
+###############################################
+# DELETE PRODUCT
+###############################################
+
+### Delete Product - Success
+DELETE {{apiUrl}}/{{productId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Delete Product - Not Found
+DELETE {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d20
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Delete Product - Invalid ID Format (Validation Error)
+DELETE {{apiUrl}}/invalid-id-format
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Delete Product - Unauthenticated (No Bearer Token)
+DELETE {{apiUrl}}/{{productId}}
+
+###
+
+### Delete Product - Invalid Token
+DELETE {{apiUrl}}/{{productId}}
+Authorization: Bearer invalid-token-here
+
+###
+
+### Delete Product - Another Merchant's Product (Permission Denied - 403)
+# Note: If the product exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual product ID from another merchant's account to test
+DELETE {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d22
+Authorization: Bearer {{accessToken}}

@@ -1,0 +1,10 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+
+GET {{apiUrl}}/invoices/list
+Authorization: Bearer {{accessToken}}
+
+### Get all invoices (latest versions only) - merchant auth required
+

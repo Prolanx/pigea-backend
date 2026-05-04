@@ -1,0 +1,19 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTE5NDM5OSwiZXhwIjoxNzc1MzY3MTk5fQ.uyuFNP_DOcxm7Lb3CnBr9JAeFo0NxuzcWpClwhfwnkE
+@invoiceId=69d10bfa1b03fb524a3f7d41
+@invoiceCustomerId=697018f2b9a77f1977fb7c5f
+@invoiceStatus = auto
+
+
+PUT {{apiUrl}}/invoices/{{invoiceId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "notes": "Updated notes for the invoice tryin gthe auto now",
+   "status": "{{invoiceStatus}}"
+}
+
+### This will create a new version of the invoice (merchant-scoped)

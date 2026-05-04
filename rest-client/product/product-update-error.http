@@ -1,0 +1,205 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NDU5Mzg2LCJleHAiOjE3Njc2MzIxODZ9.zauV3Ihbe_XyOdBT2SWKeFBntPDQuIvUMEdA0_CgYIY
+
+# Save product ID from create response here
+@productId = 695958010528a287f4b24449
+
+###############################################
+# PRODUCT UPDATE ERROR SCENARIOS
+###############################################
+
+### Update Product - Validation Error (Missing threshold when thresholdType is custom)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "thresholdType": "custom",
+  "shippingType": "auto"
+}
+
+###
+
+### Update Product - Validation Error (Threshold must not be provided when thresholdType is auto)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "thresholdType": "auto",
+  "threshold": 10,
+  "shippingType": "auto"
+}
+
+###
+
+### Update Product - Validation Error (Missing shipping cost when shippingType is custom)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "thresholdType": "auto",
+  "shippingType": "custom"
+}
+
+###
+
+### Update Product - Validation Error (Shipping cost must not be provided when shippingType is auto)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "thresholdType": "auto",
+  "shippingType": "auto",
+  "shippingCost": 18.00
+}
+
+###
+
+### Update Product - Invalid Category ID (Not Found)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "categoryId": "677a9b3c4f5e6d7a8b9c0d22"
+}
+
+###
+
+### Update Product - Invalid Category ID Format (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "categoryId": "not-a-valid-mongo-id"
+}
+
+###
+
+### Update Product - Negative Price (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "price": -50.00
+}
+
+###
+
+### Update Product - Invalid Price Format (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "price": "not-a-number"
+}
+
+###
+
+### Update Product - Negative Inventory (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "inventory": -10
+}
+
+###
+
+### Update Product - Invalid Image URL (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "imageUrl": "not-a-valid-url"
+}
+
+###
+
+### Update Product - Invalid isActive Format (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isActive": "yes"
+}
+
+###
+
+### Update Product - Name Too Short (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "A"
+}
+
+###
+
+### Update Product - Name Too Long (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "This is an extremely long product name that exceeds the maximum allowed length of two hundred characters for testing purposes and should trigger a validation error when attempting to update the product"
+}
+
+###
+
+### Update Product - Description Too Long (Validation Error)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."
+}
+
+###
+
+### Update Product - Another Merchant's Product (Permission Denied - 403)
+# Note: If the product exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual product ID from another merchant's account to test
+PUT {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d23
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Cannot Update This"
+}
+
+###
+
+### Update Product - Unauthenticated (No Bearer Token)
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Update"
+}
+
+###
+
+### Update Product - Invalid Token
+PUT {{apiUrl}}/{{productId}}
+Content-Type: application/json
+Authorization: Bearer invalid-token-here
+
+{
+  "name": "Invalid Token Update"
+}

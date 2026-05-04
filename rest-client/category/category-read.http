@@ -1,0 +1,61 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/categories
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3OTQ3ODEyLCJleHAiOjE3NjgxMjA2MTJ9.kjNkU13kgD6hMe4mXrik5EX0yQbvzMVkljt-kPEiyxA
+
+
+# Save category ID from create response here
+@categoryId = 695943b107c845e8aaa34495
+
+###############################################
+# READ CATEGORIES
+###############################################
+
+### Get All Categories - Success
+GET {{apiUrl}}
+Authorization: Bearer {{accessToken}}
+
+
+###
+### Get All Categories - Unauthenticated (No Bearer Token)
+GET {{apiUrl}}
+
+###
+
+### Get All Categories - Invalid Token
+GET {{apiUrl}}
+Authorization: Bearer invalid-token-here
+
+###############################################
+# GET CATEGORY BY ID
+###############################################
+
+### Get Category by ID - Success
+GET {{apiUrl}}/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Category by ID - Not Found
+GET {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d1f
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Category by ID - Invalid ID Format (Validation Error)
+GET {{apiUrl}}/invalid-id-format
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Category by ID - Unauthenticated
+GET {{apiUrl}}/{{categoryId}}
+
+###
+### Get Category by ID - Another Merchant's Category (Permission Denied - 403)
+# Note: If the category exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual category ID from another merchant's account to test
+GET {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d20
+Authorization: Bearer {{accessToken}}

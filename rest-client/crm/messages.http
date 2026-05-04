@@ -1,0 +1,58 @@
+### CRM - Messages
+### Email communication with contacts
+
+@baseUrl = http://localhost:3000
+@merchantToken = YOUR_MERCHANT_ACCESS_TOKEN_HERE
+@contactId = YOUR_CONTACT_ID_HERE
+
+### Send email reply to contact
+POST {{baseUrl}}/crm/messages/send
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactId": "{{contactId}}",
+  "body": "Thank you for reaching out! We're excited to discuss how our services can help your business grow. When would be a good time for a call?"
+}
+
+### Send follow-up email
+POST {{baseUrl}}/crm/messages/send
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactId": "{{contactId}}",
+  "body": "Hi there! Just following up on my previous email. Have you had a chance to review our proposal?"
+}
+
+### Get all messages for a contact
+GET {{baseUrl}}/crm/messages/contact/{{contactId}}
+Authorization: Bearer {{merchantToken}}
+
+### Get messages filtered by direction - outgoing only
+GET {{baseUrl}}/crm/messages/contact/{{contactId}}?direction=outgoing
+Authorization: Bearer {{merchantToken}}
+
+### Get messages filtered by direction - incoming only
+GET {{baseUrl}}/crm/messages/contact/{{contactId}}?direction=incoming
+Authorization: Bearer {{merchantToken}}
+
+### Error - Send to non-existent contact (should fail)
+POST {{baseUrl}}/crm/messages/send
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactId": "000000000000000000000000",
+  "body": "This will fail because contact doesn't exist"
+}
+
+### Error - Empty message body (should fail)
+POST {{baseUrl}}/crm/messages/send
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactId": "{{contactId}}",
+  "body": ""
+}

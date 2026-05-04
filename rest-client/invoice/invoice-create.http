@@ -1,0 +1,47 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+@invoiceCustomerId=69d7b5160968f3d1538ce5d9
+@invoiceStatus = draft
+@invoiceCustomerEmail = jack.daramola@kihasl.com
+
+POST {{apiUrl}}/invoices
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "customerId": "{{invoiceCustomerId}}",
+  "customerEmail": "{{invoiceCustomerEmail}}",
+  "invoiceCategory": "service",
+  "issueDate": "2026-02-01T00:00:00.000Z",
+  "dueDate": "2026-05-28T00:00:00.000Z",
+  "notes": "Initial invoice",
+  "status": "{{invoiceStatus}}",
+  "items": [
+    { "name": "Service A", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 },
+    { "name": "Service B", "itemCategory": "service", "quantity": 15, "unitPrice": 1150.00 },
+    { "name": "Service C", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 } 
+     ],
+  "tax": 0,
+  "discount": 0
+}
+
+### Create an invoice (merchant auth required)
+### Example successful response
+// {
+//   "status": "success",
+//   "message": "Invoice created successfully",
+//   "data": {
+//     "id": "...",
+//     "invoiceNumber": "INV-000001",
+//     "customer": { "id": "...", "data": { "sys_email": "...", "sys_name": "...", "Phone": "..." }, "email": "...", "name": "..." },
+//     "items": [{ "id": "<item-id>", "description": "Service A", "quantity": 10, "unitPrice": 350, "total": 3500 }],
+//     "subtotal": 3500,
+//     "tax": 0,
+//     "total": 3500,
+//     "status": "draft",
+//     "statusHistory": [{ "id": "...", "status": "draft", "changedAt": "..." }],
+//     "dueDate": "2026-02-01T00:00:00.000Z"
+//   }
+// }

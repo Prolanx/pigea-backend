@@ -1,0 +1,136 @@
+### CRM - Contacts
+### Manage contact records with dynamic data
+
+@baseUrl = http://localhost:3000
+@merchantToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+###### john may token
+####@merchantToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTVhODIwYTg3NDM3YWJmYjg2NzFiZmIiLCJlbWFpbCI6ImpvaG4ubWF5QGtpaGFzbC5jb20iLCJyb2xlIjoibWVyY2hhbnQiLCJpYXQiOjE3Njc1Mzk1NTMsImV4cCI6MTc2NzcxMjM1M30.jb17wWrWvdro0MSUcUsyoWIrHfPxJYvWMpDUVEMx2mY
+
+@contactTypeId = 695cb1fca841a890b8d75bdb
+@contactId = 69af417a0e2c2954ce51ae25
+
+### Create contact manually (B2B Client example)
+# Note: For custom fields, use the MongoDB _id returned when you created the field
+POST {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactTypeId": "{{contactTypeId}}",
+  "data": {
+    "sys_name": "John Doe",
+    "sys_email": "john.doe@example.com"
+  }
+}
+
+### Create individual customer contact
+POST {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactTypeId": "69ae9f3891a8db5bafd9285e",
+  "data": {
+    "sys_name": "Jack Daramola",
+    "sys_email": "jack.daramola@kihasl.com",
+    "69adff6c6a20141a386acf65": "Male",
+    "69ae012e6a20141a386acf69": "Digital Consultant",
+    "69ae01676a20141a386acf6d": "Online"
+  }
+}
+
+### PUBLIC ENDPOINT - Submit contact form (no authentication)
+# This is typically used from website forms
+POST {{baseUrl}}/crm/contacts/submit/MERCHANT_ID_HERE/{{contactTypeId}}
+Content-Type: application/json
+
+{
+  "data": {
+    "sys_name": "Alice Johnson",
+    "sys_email": "alice.johnson@example.com",
+    "industry": "FinTech"
+  }
+}
+
+### Get all contacts
+GET {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+
+### Get contacts filtered by type
+GET {{baseUrl}}/crm/contacts?contactTypeId={{contactTypeId}}
+Authorization: Bearer {{merchantToken}}
+
+### Get contacts filtered by status
+GET {{baseUrl}}/crm/contacts?status=sys_new
+Authorization: Bearer {{merchantToken}}
+
+### Get contacts filtered by source(Work On this later)
+GET {{baseUrl}}/crm/contacts?source=WebsiteForm
+Authorization: Bearer {{merchantToken}}
+
+### Get single contact by ID
+GET {{baseUrl}}/crm/contacts/{{contactId}}
+Authorization: Bearer {{merchantToken}}
+
+### Update contact data
+PATCH {{baseUrl}}/crm/contacts/{{contactId}}
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "data": {
+    "sys_name": "Jade"
+  }
+}
+
+### Update contact status
+PATCH {{baseUrl}}/crm/contacts/{{contactId}}
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "status": "Contacted"
+}
+
+### Delete contact
+DELETE {{baseUrl}}/crm/contacts/{{contactId}}
+Authorization: Bearer {{merchantToken}}
+
+### Error - Missing required field (should fail)
+POST {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactTypeId": "{{contactTypeId}}",
+  "data": {
+    "sys_name": "Incomplete"
+  }
+}
+
+### Error - Extra field not in contact type (should fail)
+POST {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactTypeId": "{{contactTypeId}}",
+  "data": {
+    "sys_name": "John Doe",
+    "sys_email": "john@example.com",
+    "unknown_field": "This field is not in the contact type"
+  }
+}
+
+### Error - Duplicate email (should fail if contact with this email exists)
+POST {{baseUrl}}/crm/contacts
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "contactTypeId": "{{contactTypeId}}",
+  "data": {
+    "sys_name": "Duplicate Contact",
+    "sys_email": "john.doe@example.com"
+  }
+}

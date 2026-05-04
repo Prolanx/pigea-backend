@@ -1,0 +1,133 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Save product ID from create response here
+@productId = 677a9b3c4f5e6d7a8b9c0d1e
+
+###############################################
+# UPDATE PRODUCT INVENTORY
+###############################################
+
+### Update Inventory - Add Stock (Positive quantity)
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": 50
+}
+
+###
+
+### Update Inventory - Remove Stock (Negative quantity)
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": -10
+}
+
+###
+
+### Update Inventory - Large Stock Addition
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": 1000
+}
+
+###
+
+### Update Inventory - Not Found
+PATCH {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d20/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": 50
+}
+
+###
+
+### Update Inventory - Invalid ID Format (Validation Error)
+PATCH {{apiUrl}}/invalid-id-format/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": 50
+}
+
+###
+
+### Update Inventory - Missing Quantity (Validation Error)
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+}
+
+###
+
+### Update Inventory - Invalid Quantity Format (Validation Error)
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": "not-a-number"
+}
+
+###
+
+### Update Inventory - Insufficient Stock (Will cause negative inventory - Error)
+# Note: Make sure product has less than 1000 items before running this
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": -1000
+}
+
+###
+
+### Update Inventory - Another Merchant's Product (Permission Denied - 403)
+# Note: If the product exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual product ID from another merchant's account to test
+PATCH {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d22/inventory
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "quantity": 50
+}
+
+###
+
+### Update Inventory - Unauthenticated (No Bearer Token)
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+
+{
+  "quantity": 50
+}
+
+###
+
+### Update Inventory - Invalid Token
+PATCH {{apiUrl}}/{{productId}}/inventory
+Content-Type: application/json
+Authorization: Bearer invalid-token-here
+
+{
+  "quantity": 50
+}

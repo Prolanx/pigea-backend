@@ -1,0 +1,136 @@
+### CRM Status Endpoints
+### Test endpoints for managing contact status
+
+@baseUrl = http://localhost:3000/crm
+#######
+@merchantToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NjMzMTM2LCJleHAiOjE3Njc4MDU5MzZ9.KUej0UDjck0erjAE4rTZuecevs3FS75cpdka72AbGtY
+###### john may token
+####@merchantToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTVhODIwYTg3NDM3YWJmYjg2NzFiZmIiLCJlbWFpbCI6ImpvaG4ubWF5QGtpaGFzbC5jb20iLCJyb2xlIjoibWVyY2hhbnQiLCJpYXQiOjE3Njc1Mzk1NTMsImV4cCI6MTc2NzcxMjM1M30.jb17wWrWvdro0MSUcUsyoWIrHfPxJYvWMpDUVEMx2mY
+##########################
+@statusId=695be4b6c73da202d633443a
+
+
+### 1. Get All Statuses (System + Custom)
+# Returns both hardcoded system status and merchant's custom status
+GET {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+
+### 2. Get Status by ID (System Status)
+# Retrieve a specific system status
+GET {{baseUrl}}/status/sys_new
+Authorization: Bearer {{merchantToken}}
+
+### 3. Create Custom Status
+# Create a new custom status for your business
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Qualified Lead",
+  "description": "Lead has been qualified and assigned to sales",
+  "color": "#8B5CF6",
+}
+
+### 4. Create Another Custom Status
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Demo Scheduled",
+  "description": "Product demo has been scheduled",
+  "color": "#3B82F6"
+}
+
+### 5. Create Custom Status - In Negotiation
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "In Negotiation",
+  "description": "Currently negotiating contract terms",
+  "color": "#F59E0B"
+}
+
+### 6. Get Status by ID (Custom Status)
+# Replace {{statusId}} with actual ID from create response
+GET {{baseUrl}}/status/{{statusId}}
+Authorization: Bearer {{merchantToken}}
+
+### 7. Update Custom Status
+# Update name, description, or color
+PATCH {{baseUrl}}/status/{{statusId}}
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "description": "Lead has been qualified & assigned to sales team",
+  "color": "#9333EA"
+}
+
+### 8. Delete Custom Status (Will Fail if In use)
+# Cannot delete if any contacts are using this status
+DELETE {{baseUrl}}/status/{{statusId}}
+Authorization: Bearer {{merchantToken}}
+
+### 9. Try to Modify System Status (Should Fail)
+# System status are read-only
+PATCH {{baseUrl}}/status/sys_new
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Modified New"
+}
+
+### 10. Try to Delete System Status (Should Fail)
+# System status cannot be deleted
+DELETE {{baseUrl}}/status/sys_contacted
+Authorization: Bearer {{merchantToken}}
+
+### 11. Create Status with Duplicate Name (Should Fail)
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Qualified Lead",
+  "description": "Duplicate test",
+  "color": "#FF0000"
+}
+
+### 12. Create Status with System Name (Should Fail)
+# Cannot use system status names for custom status
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "New",
+  "description": "This should fail",
+  "color": "#FF0000"
+}
+
+### 13. Create Status with Invalid Color (Should Fail)
+POST {{baseUrl}}/status
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Invalid Color Status",
+  "description": "Testing validation",
+  "color": "blue"
+}
+
+###
+# System Status IDs:
+# - sys_new (Blue)
+# - sys_contacted (Amber)
+# - sys_converted (Green)
+# - sys_lost (Red)
+#
+# Custom status use MongoDB ObjectId as ID
+# Contacts can use either system or custom status IDs
+

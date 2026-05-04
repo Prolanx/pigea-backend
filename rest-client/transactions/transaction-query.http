@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:3000
+@transactionId = TXN-1234567892
+
+### Query Transaction by Transaction ID
+GET {{baseUrl}}/transactions/query?transactionId={{transactionId}}
+Content-Type: application/json
+
+###
+# Notes:
+# - Replace {{transactionId}} with the payment processor transaction ID you want to look up.

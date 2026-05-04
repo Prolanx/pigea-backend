@@ -1,0 +1,25 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3OTQ3ODEyLCJleHAiOjE3NjgxMjA2MTJ9.kjNkU13kgD6hMe4mXrik5EX0yQbvzMVkljt-kPEiyxA
+
+###############################################
+# PRODUCT SUMMARY
+###############################################
+
+### Get Product Summary - Success
+GET {{apiUrl}}/summary
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Product Summary - Unauthenticated (No Bearer Token)
+GET {{apiUrl}}/summary
+
+###
+
+### Get Product Summary - Invalid Token
+GET {{apiUrl}}/summary
+Authorization: Bearer invalid-token-here

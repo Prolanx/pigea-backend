@@ -1,0 +1,18 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken = 
+@invoiceId = 
+
+GET {{apiUrl}}/invoices/{{invoiceId}}/versions
+Authorization: Bearer {{accessToken}}
+
+### Get versions of an invoice (requires merchant auth)
+
+### Example response
+// 200 OK
+// {
+//   "status": "success",
+//   "message": "Invoice versions retrieved successfully",
+//   "data": [ { /* version objects */ } ]
+// }

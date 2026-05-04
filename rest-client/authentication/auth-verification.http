@@ -1,0 +1,76 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/auth
+
+###############################################
+# EMAIL VERIFICATION
+###############################################
+
+### Verify Email - Valid Token
+POST {{apiUrl}}/verify-email
+Content-Type: application/json
+
+{
+  "verificationToken": "633947"
+}
+
+###
+
+### Verify Email - Invalid Token
+POST {{apiUrl}}/verify-email
+Content-Type: application/json
+
+{
+  "token": "000000"
+}
+
+###
+
+### Verify Email - Expired Token
+POST {{apiUrl}}/verify-email
+Content-Type: application/json
+
+{
+  "token": "999999"
+}
+
+###
+
+### Verify Email - Missing Token (Validation Error)
+POST {{apiUrl}}/verify-email
+Content-Type: application/json
+
+{
+}
+
+###############################################
+# RESEND VERIFICATION
+###############################################
+
+### Resend Verification Email
+POST {{apiUrl}}/resend-verification
+Content-Type: application/json
+
+{
+  "email": "john.merchant@example.com"
+}
+
+###
+
+### Resend Verification - Already Verified Account
+POST {{apiUrl}}/resend-verification
+Content-Type: application/json
+
+{
+  "email": "verified@example.com"
+}
+
+###
+
+### Resend Verification - Account Not Found
+POST {{apiUrl}}/resend-verification
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com"
+}

@@ -1,0 +1,274 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY3NDU5Mzg2LCJleHAiOjE3Njc2MzIxODZ9.zauV3Ihbe_XyOdBT2SWKeFBntPDQuIvUMEdA0_CgYIY
+
+# Save category ID from create response here
+@categoryId = 695943b107c845e8aaa34495
+
+###############################################
+# PRODUCT CREATE ERROR SCENARIOS
+###############################################
+
+### Create Product - Validation Error (Missing threshold when thresholdType is custom)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Custom Threshold Product",
+  "description": "This product uses custom threshold without a threshold value",
+  "price": 199.99,
+  "inventory": 20,
+  "thresholdType": "custom",
+  "shippingType": "auto",
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Validation Error (Threshold must not be provided when thresholdType is auto)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Auto Threshold Product",
+  "description": "This product uses auto threshold but includes threshold value",
+  "price": 199.99,
+  "inventory": 20,
+  "thresholdType": "auto",
+  "threshold": 5,
+  "shippingType": "auto",
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Validation Error (Missing shipping cost when shippingType is custom)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Custom Shipping Product",
+  "description": "This product uses custom shipping without shipping cost",
+  "price": 199.99,
+  "inventory": 20,
+  "thresholdType": "auto",
+  "shippingType": "custom",
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Validation Error (Shipping cost must not be provided when shippingType is auto)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Auto Shipping Product",
+  "description": "This product uses auto shipping but includes shipping cost",
+  "price": 199.99,
+  "inventory": 20,
+  "thresholdType": "auto",
+  "shippingType": "auto",
+  "shippingCost": 5.00,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Missing Name (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "description": "Product without a name",
+  "price": 99.99
+}
+
+###
+
+### Create Product - Negative Price (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Negative Price Product",
+  "description": "This product has a negative price",
+  "price": -10.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Invalid Price Format (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Invalid Price Product",
+  "description": "Price is not a number",
+  "price": "not-a-number",
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Negative Inventory (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Negative Inventory Product",
+  "description": "This product has negative inventory",
+  "price": 29.99,
+  "inventory": -5,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Invalid Image URL (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Invalid Image Product",
+  "description": "Product with invalid image URL",
+  "price": 49.99,
+  "inventory": 10,
+  "imageUrl": "not-a-valid-url",
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Invalid isActive Format (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Invalid isActive Product",
+  "description": "isActive should be boolean",
+  "price": 39.99,
+  "inventory": 10,
+  "isActive": "yes",
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Invalid Category ID Format (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Invalid Category ID Product",
+  "description": "Product with invalid category ID format",
+  "price": 59.99,
+  "inventory": 10,
+  "categoryId": "not-a-valid-mongo-id"
+}
+
+###
+
+### Create Product - Non-existent Category (Not Found)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Non-existent Category Product",
+  "description": "Product linked to a category that doesn't exist",
+  "price": 79.99,
+  "inventory": 10,
+  "categoryId": "677a9b3c4f5e6d7a8b9c0d1f"
+}
+
+###
+
+### Create Product - Name Too Short (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "A",
+  "description": "Product name is too short",
+  "price": 19.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Name Too Long (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "This is an extremely long product name that exceeds the maximum allowed length of two hundred characters for testing purposes and should trigger a validation error when attempting to create the product",
+  "description": "Product name is too long",
+  "price": 19.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Description Too Long (Validation Error)
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Long Description Product",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.",
+  "price": 29.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Unauthenticated (No Bearer Token)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Product",
+  "description": "This request has no authentication token",
+  "price": 99.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}
+
+###
+
+### Create Product - Invalid Token
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer invalid-token-here
+
+{
+  "name": "Invalid Token Product",
+  "description": "This request has an invalid token",
+  "price": 99.99,
+  "inventory": 10,
+  "categoryId": "{{categoryId}}"
+}

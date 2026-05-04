@@ -1,0 +1,87 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/products
+
+# Save access token from login response here (merchant account required)
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NjA2Mjg3NiwiZXhwIjoxNzc2MjM1Njc2fQ.k54VUZmbCHWOXZYhGBHLEA7otX6F9aag8GVGrp_1G6o
+# Save product ID from create response here
+@productId = 695958010528a287f4b24449
+
+# Save category ID for filtering
+@categoryId = 695943b107c845e8aaa34495
+
+###############################################
+# READ PRODUCTS
+###############################################
+
+### Get All Products - Success
+GET {{apiUrl}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get All Products - Filter by Category
+GET {{apiUrl}}?categoryId={{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get All Products - Filter by Active Status (Active only)
+GET {{apiUrl}}?isActive=true
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get All Products - Filter by Active Status (Inactive only)
+GET {{apiUrl}}?isActive=false
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get All Products - Filter by Category and Active Status
+GET {{apiUrl}}?categoryId={{categoryId}}&isActive=true
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get All Products - Unauthenticated (No Bearer Token)
+GET {{apiUrl}}
+
+###
+
+### Get All Products - Invalid Token
+GET {{apiUrl}}
+Authorization: Bearer invalid-token-here
+
+###############################################
+# GET PRODUCT BY ID
+###############################################
+
+### Get Product by ID - Success
+GET {{apiUrl}}/{{productId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Product by ID - Not Found
+GET {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d20
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Product by ID - Invalid ID Format (Validation Error)
+GET {{apiUrl}}/invalid-id-format
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Product by ID - Unauthenticated
+GET {{apiUrl}}/{{productId}}
+
+###
+
+### Get Product by ID - Another Merchant's Product (Permission Denied - 403)
+# Note: If the product exists but belongs to another merchant, you'll get a 403 error
+# Replace the ID below with an actual product ID from another merchant's account to test
+GET {{apiUrl}}/677a9b3c4f5e6d7a8b9c0d21
+Authorization: Bearer {{accessToken}}

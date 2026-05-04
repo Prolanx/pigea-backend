@@ -1,0 +1,24 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTU5MjViMjc1MDg2Y2E3MzI2MDY5ZGYiLCJlbWFpbCI6ImpvZS5yb2dhbkBraWhhc2wuY29tIiwicm9sZSI6Im1lcmNoYW50IiwiaWF0IjoxNzY5NDI2NDYxLCJleHAiOjE3Njk1OTkyNjF9.Jrfjtkz91Rj_Bj9r99ctC2nUlPVqOrJDjpuM8ZgmqAA
+# @invoiceId = 6978d0ce1bc8174aab459a2c
+@invoiceId = 6978d0e21bc8174aab459a3e
+
+PATCH {{apiUrl}}/invoices/{{invoiceId}}/status
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": "draft"
+}
+
+### Update status for a specific invoice version (merchant auth required)
+### Valid transitions: draft -> sent, sent -> paid, draft/sent -> cancelled
+
+### Example response
+// {
+//  "status": "success",
+//  "message": "Invoice status updated successfully",
+//  "data": { /* updated invoice */ }
+// }

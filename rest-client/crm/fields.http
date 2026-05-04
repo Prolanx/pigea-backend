@@ -1,0 +1,76 @@
+### CRM - Field Definitions
+### Merchants define custom fields for their contact types
+
+@baseUrl = http://localhost:3000
+@merchantToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3Mjc5Nzg0NSwiZXhwIjoxNzcyOTcwNjQ1fQ.A0aFx_gT-I3zTO7E99R3aB9awzZEuWNgCb4NVC4-6wc
+POST {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Industry/Profession",
+  "type": "text"
+}
+
+### Create custom field - Select type
+POST {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Preferred Contact Method",
+  "type": "select",
+  "options": ["Email", "Phone", "SMS", "WhatsApp"]
+}
+
+### Create custom field - Date type
+POST {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Last Purchase Date",
+  "type": "date"
+}
+
+### Get all field definitions (system + custom)
+GET {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+
+### Get single field definition
+GET {{baseUrl}}/crm/fields/695a4573d9b1b90a9aa12d4a
+Authorization: Bearer {{merchantToken}}
+
+### Update custom field
+PATCH {{baseUrl}}/crm/fields/695a4573d9b1b90a9aa12d4a
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "How to Reach You",
+  "options": ["Email", "Phone", "SMS", "WhatsApp", "In-Person"]
+}
+
+### Delete custom field
+DELETE {{baseUrl}}/crm/fields/695a456ed9b1b90a9aa12d48
+Authorization: Bearer {{merchantToken}}
+
+### Error - Try to create field with system field name (should fail)
+POST {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "First Name",
+  "type": "text"
+}
+
+### Error - Create select field without options (should fail)
+POST {{baseUrl}}/crm/fields
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "name": "Customer Status",
+  "type": "select"
+}
