@@ -19,8 +19,8 @@ class InboxController {
     this.accountDAO = accountDAO;
   }
 
-  async ingestInboundEmailWebhook(items) {
-    return ingestInboundEmailWebhook.call(this, items);
+  async ingestInboundEmailWebhook(items, traceContext = {}) {
+    return ingestInboundEmailWebhook.call(this, items, traceContext);
   }
 
   async listMessages(merchantId, queryParams) {

@@ -8,13 +8,18 @@ const { AuthConstants } = constants;
 
 export async function login(email, password) {
   try {
+    console.log("email address ", email)
     const account = await this.accountDAO.findByEmail(email);
+
     if (!account) {
+
+        console.log(`Failed login attempt: Account not found`, account);
       throw new ControllerError(AuthConstants.ERRORS.INVALID_CREDENTIALS, 401);
     }
 
     const isPasswordValid = await this.passwordAdapter.comparePassword(password, account.password);
     if (!isPasswordValid) {
+      console.log(`Failed login attempt for email: ${email} - Invalid password`);
       throw new ControllerError(AuthConstants.ERRORS.INVALID_CREDENTIALS, 401);
     }
 

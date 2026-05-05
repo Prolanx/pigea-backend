@@ -4,7 +4,7 @@
 # @baseUrl = http://localhost:3000
 @baseUrl =https://pigea-backend.onrender.com
 
-@merchantToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+@merchantToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3Nzk2NzczMCwiZXhwIjoxNzc4MTQwNTMwfQ.7fs6HfwPkh0V16H1UIwoiYk6Vlw-x6WqfHAwzj1nY2g
 
 ###############################################
 # GET CURRENT SLUG
@@ -24,7 +24,7 @@ Authorization: Bearer {{merchantToken}}
 Content-Type: application/json
 
 {
-  "slug": "temi-store"
+  "slug": "acme-consulting"
 }
 
 ###
