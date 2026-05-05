@@ -22,6 +22,7 @@ function createInboxSettingsRoutes(controller) {
     try {
       const merchantId = req.user.accountId;
       const data = await controller.getInboxSlug(merchantId);
+      console.log(`[InboxSettingsRoutes] Fetched inbox slug for merchant ${merchantId}:`, data);
       return res.status(200).json({
         status: 'success',
         message: InboxConstants.SLUG.GET_SUCCESS,
