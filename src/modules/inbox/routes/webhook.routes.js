@@ -33,11 +33,13 @@ function createInboxWebhookRoutes(controller) {
    */
   router.post(
     '/webhooks/inbound-email',
-    validateDto(inboundEmailWebhookDtoSchema, InboxConstants.ERRORS.INGEST_FAILED),
+    // validateDto(inboundEmailWebhookDtoSchema, InboxConstants.ERRORS.INGEST_FAILED),
     async (req, res) => {
       try {
         const requestId = `iw-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         const { items } = req.body;
+
+        console.log(`webhook request body:`, req.body);
 
         logInboxWebhook('Inbound webhook request received', {
           requestId,
