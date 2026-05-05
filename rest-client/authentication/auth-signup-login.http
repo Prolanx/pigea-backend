@@ -1,5 +1,6 @@
 ### Variables
-@baseUrl = http://localhost:3000
+# @baseUrl = http://localhost:3000
+@baseUrl =https://pigea-backend.onrender.com
 @apiUrl = {{baseUrl}}/auth
 
 ###############################################

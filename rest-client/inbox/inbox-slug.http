@@ -1,0 +1,158 @@
+### Inbox - Slug Settings
+### Manage the merchant's inboxSlug (used to route inbound emails)
+
+# @baseUrl = http://localhost:3000
+@baseUrl =https://pigea-backend.onrender.com
+
+@merchantToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+
+###############################################
+# GET CURRENT SLUG
+###############################################
+
+### Get inbox slug - returns current slug or null if not set
+GET {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+
+###############################################
+# SET / UPDATE SLUG
+###############################################
+
+### Set inbox slug - success
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "temi-store"
+}
+
+###
+
+### Update inbox slug - change to a different valid slug
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "my-business-inbox"
+}
+
+###############################################
+# VALIDATION ERRORS
+###############################################
+
+### Missing slug field (400 - validation error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{}
+
+###
+
+### Slug too short - less than 3 characters (400 - validation error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "ab"
+}
+
+###
+
+### Slug too long - more than 50 characters (400 - validation error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "this-slug-is-way-too-long-and-exceeds-the-fifty-character-maximum-limit"
+}
+
+###
+
+### Slug with uppercase letters (400 - pattern error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "MyStore"
+}
+
+###
+
+### Slug with spaces (400 - pattern error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "my store"
+}
+
+###
+
+### Slug with special characters (400 - pattern error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "my_store!"
+}
+
+###
+
+### Slug with leading hyphen (400 - pattern error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "-my-store"
+}
+
+###
+
+### Slug with trailing hyphen (400 - pattern error)
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "my-store-"
+}
+
+###############################################
+# AUTH ERRORS
+###############################################
+
+### No token - unauthenticated (401)
+PATCH {{baseUrl}}/inbox/settings/slug
+Content-Type: application/json
+
+{
+  "slug": "temi-store"
+}
+
+###
+
+### No token - get slug unauthenticated (401)
+GET {{baseUrl}}/inbox/settings/slug
+
+###############################################
+# CONFLICT
+###############################################
+
+### Slug already taken by another merchant (409)
+# Set @takenSlug to a slug already owned by a different account
+PATCH {{baseUrl}}/inbox/settings/slug
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "slug": "taken-slug-here"
+}

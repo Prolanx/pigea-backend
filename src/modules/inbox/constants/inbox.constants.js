@@ -78,6 +78,26 @@ export const InboxConstants = {
   CONFIG: {
     DEFAULT_PAGE_SIZE: 20,
     MAX_PAGE_SIZE: 100,
+    SLUG_MIN_LENGTH: 3,
+    SLUG_MAX_LENGTH: 50,
+  },
+
+  // ─── Slug ─────────────────────────────────────────────────────────────────
+  SLUG: {
+    PATTERN: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    SET_SUCCESS: 'Inbox slug updated successfully',
+    GET_SUCCESS: 'Inbox slug retrieved successfully',
+    TAKEN: 'This inbox slug is already in use',
+    NOT_FOUND: 'No inbox slug configured',
+    SET_FAILED: 'Failed to update inbox slug',
+  },
+
+  // ─── Slug Validation ──────────────────────────────────────────────────────
+  SLUG_VALIDATION: {
+    REQUIRED: 'slug is required',
+    MIN_LENGTH: 'slug must be at least 3 characters',
+    MAX_LENGTH: 'slug must be at most 50 characters',
+    PATTERN: 'slug must contain only lowercase letters, numbers, and hyphens (no leading/trailing hyphens)',
   },
 };
 

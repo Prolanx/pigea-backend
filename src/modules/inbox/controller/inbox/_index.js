@@ -2,6 +2,8 @@ import { ingestInboundEmailWebhook } from '@modules/inbox/controller/inbox/inges
 import { listMessages } from '@modules/inbox/controller/inbox/listMessages.js';
 import { getMessageById } from '@modules/inbox/controller/inbox/getMessageById.js';
 import { updateMessageStatus } from '@modules/inbox/controller/inbox/updateMessageStatus.js';
+import { setInboxSlug } from '@modules/inbox/controller/inbox/setInboxSlug.js';
+import { getInboxSlug } from '@modules/inbox/controller/inbox/getInboxSlug.js';
 
 /**
  * InboxController — business logic layer for the inbox module.
@@ -31,6 +33,14 @@ class InboxController {
 
   async updateMessageStatus(messageId, merchantId, status) {
     return updateMessageStatus.call(this, messageId, merchantId, status);
+  }
+
+  async setInboxSlug(merchantId, slug) {
+    return setInboxSlug.call(this, merchantId, slug);
+  }
+
+  async getInboxSlug(merchantId) {
+    return getInboxSlug.call(this, merchantId);
   }
 }
 
