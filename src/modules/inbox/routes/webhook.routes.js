@@ -15,10 +15,10 @@ import { getRouteErrorMessage, getRouteErrorStatusCode } from '@common/utilities
 function createInboxWebhookRoutes(controller) {
   const router = express.Router();
 
-  const isInboxDebugEnabled = process.env.NODE_ENV !== 'production';
+//   const isInboxDebugEnabled = process.env.NODE_ENV !== 'production';
 
   const logInboxWebhook = (message, details = null) => {
-    if (!isInboxDebugEnabled) return;
+    // if (!isInboxDebugEnabled) return;
     if (details) {
       console.log(`[InboxWebhook][Route] ${message}`, details);
       return;
