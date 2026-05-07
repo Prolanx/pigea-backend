@@ -12,6 +12,26 @@ export const InboxConstants = {
     WHATSAPP: 'whatsapp',
   },
 
+  CHANNEL_STATUS: {
+    CONNECTED: 'connected',
+    DISCONNECTED: 'disconnected',
+  },
+
+  CHANNEL_CARDS: {
+    ORDER: ['whatsapp', 'email', 'website_chat'],
+    MAP: {
+      whatsapp: {
+        defaultConfigLabel: 'phoneNumber',
+      },
+      email: {
+        defaultConfigLabel: 'slug',
+      },
+      website_chat: {
+        defaultConfigLabel: null,
+      },
+    },
+  },
+
   // ─── Message Direction ────────────────────────────────────────────────────
   DIRECTION: {
     INBOUND: 'inbound',
@@ -36,8 +56,15 @@ export const InboxConstants = {
   SUCCESS: {
     WEBHOOK_ACCEPTED: 'OK',
     MESSAGES_RETRIEVED: 'Messages retrieved successfully',
+    SUMMARY_RETRIEVED: 'Inbox summary retrieved successfully',
     MESSAGE_RETRIEVED: 'Message retrieved successfully',
+    REPLY_SENT: 'Reply sent successfully',
     STATUS_UPDATED: 'Message status updated successfully',
+    CHANNELS_RETRIEVED: 'Inbox channels retrieved successfully',
+    CHANNELS_SUMMARY_RETRIEVED: 'Inbox channel summary retrieved successfully',
+    CHANNEL_CONNECTED: 'Channel connected successfully',
+    CHANNEL_DISCONNECTED: 'Channel disconnected successfully',
+    CHANNEL_CONFIG_UPDATED: 'Channel configuration updated successfully',
   },
 
   // ─── Error Messages ───────────────────────────────────────────────────────
@@ -49,9 +76,19 @@ export const InboxConstants = {
     INGEST_FAILED: 'Failed to ingest inbound email',
     LIST_FAILED: 'Failed to retrieve messages',
     GET_FAILED: 'Failed to retrieve message',
+    REPLY_FAILED: 'Failed to send reply',
+    REPLY_EMAIL_REQUIRED: 'Target message does not have a valid sender email',
+    REPLY_ONLY_EMAIL: 'Reply is only supported for email messages',
+    REPLY_MERCHANT_NOT_FOUND: 'Merchant account not found',
     STATUS_UPDATE_FAILED: 'Failed to update message status',
     INVALID_STATUS: 'Invalid message status value',
     DUPLICATE_SKIPPED: 'Duplicate message skipped',
+    INVALID_CHANNEL_TYPE: 'Invalid channel type',
+    CHANNELS_LIST_FAILED: 'Failed to retrieve channels',
+    CHANNELS_SUMMARY_FAILED: 'Failed to retrieve channel summary',
+    CHANNEL_CONNECT_FAILED: 'Failed to connect channel',
+    CHANNEL_DISCONNECT_FAILED: 'Failed to disconnect channel',
+    CHANNEL_CONFIG_UPDATE_FAILED: 'Failed to update channel configuration',
   },
 
   // ─── Validation Messages ──────────────────────────────────────────────────
@@ -60,8 +97,14 @@ export const InboxConstants = {
     ITEMS_MUST_BE_ARRAY: 'items must be an array',
     STATUS_REQUIRED: 'status is required',
     STATUS_INVALID: 'status must be one of: unread, read, archived',
+    REPLY_BODY_REQUIRED: 'bodyText is required',
+    REPLY_BODY_MUST_BE_STRING: 'bodyText must be a string',
     MESSAGE_ID_REQUIRED: 'messageId is required',
     CHANNEL_INVALID: 'channelType must be one of: email, website_chat, whatsapp',
+    CHANNEL_TYPE_REQUIRED: 'channelType is required',
+    CHANNEL_TYPE_INVALID: 'channelType must be one of: email, website_chat, whatsapp',
+    CHANNEL_CONFIGURATION_REQUIRED: 'configuration is required',
+    CHANNEL_CONFIGURATION_MUST_BE_OBJECT: 'configuration must be an object',
   },
 
   // ─── DB Error Messages ────────────────────────────────────────────────────
@@ -72,6 +115,15 @@ export const InboxConstants = {
     UPDATE_FAILED: 'Failed to update inbox message',
     COUNT_FAILED: 'Failed to count inbox messages',
     FIND_BY_EXTERNAL_ID_FAILED: 'Failed to find message by external ID',
+    LIST_CHANNELS_FAILED: 'Failed to list channel connections',
+    CONNECT_CHANNEL_FAILED: 'Failed to connect channel',
+    DISCONNECT_CHANNEL_FAILED: 'Failed to disconnect channel',
+    UPDATE_CHANNEL_CONFIG_FAILED: 'Failed to update channel configuration',
+  },
+
+  UI: {
+    LAST_SYNC_NEVER: '--',
+    LAST_SYNC_CONNECTED: 'Just now',
   },
 
   // ─── Config ───────────────────────────────────────────────────────────────

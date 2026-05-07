@@ -3,7 +3,7 @@ import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 
 /**
  * Validates query params for listing inbox messages.
- * All fields are optional — pagination, channel, status, and date range filters.
+ * All fields are optional — channel, status, and date range filters.
  */
 const listMessagesDtoSchema = [
   query('channelType')
@@ -15,16 +15,6 @@ const listMessagesDtoSchema = [
     .optional()
     .isIn(Object.values(InboxConstants.STATUS))
     .withMessage(InboxConstants.VALIDATION.STATUS_INVALID),
-
-  query('page')
-    .optional()
-    .isInt({ min: 1 })
-    .toInt(),
-
-  query('limit')
-    .optional()
-    .isInt({ min: 1, max: InboxConstants.CONFIG.MAX_PAGE_SIZE })
-    .toInt(),
 
   query('from')
     .optional()

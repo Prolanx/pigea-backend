@@ -2,29 +2,17 @@ import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 
 /**
- * List inbox messages for a merchant with filtering and pagination.
+ * List inbox messages for a merchant with optional filters.
  *
  * @this {InboxController}
  * @param {string} merchantId
- * @param {Object} queryParams - { channelType, status, from, to, page, limit }
- * @returns {Promise<Object>} { messages, total, page, limit }
+ * @param {Object} queryParams - { channelType, status, from, to }
+ * @returns {Promise<Array>} formatted inbox messages
  */
 export async function listMessages(merchantId, queryParams = {}) {
   try {
-    const { messages, total } = await this.inboxDAO.listByMerchant(merchantId, queryParams);
-
-    const page = Math.max(Number(queryParams.page || 1), 1);
-    const limit = Math.min(
-      Number(queryParams.limit || InboxConstants.CONFIG.DEFAULT_PAGE_SIZE),
-      InboxConstants.CONFIG.MAX_PAGE_SIZE
-    );
-
-    return {
-      messages: messages.map(formatMessage),
-      total,
-      page,
-      limit,
-    };
+    const messages = await this.inboxDAO.listByMerchant(merchantId, queryParams);
+    return messages.map(formatMessage);
   } catch (error) {
     if (error instanceof DAOError || error instanceof ControllerError) {
       throw error;

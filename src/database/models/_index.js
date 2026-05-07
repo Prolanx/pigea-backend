@@ -4,6 +4,7 @@ import Contact from './Contact.js';
 import ContactType from './ContactType.js';
 import Counter from './Counter.js';
 import FieldDefinition from './FieldDefinition.js';
+import InboxChannelConnection from './InboxChannelConnection.js';
 import InboxMessage from './InboxMessage.js';
 import Invoice from './Invoice.js';
 import Message from './Message.js';
@@ -19,6 +20,7 @@ export const models = {
   ContactType,
   Counter,
   FieldDefinition,
+  InboxChannelConnection,
   InboxMessage,
   Invoice,
   Message,

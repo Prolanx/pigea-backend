@@ -93,10 +93,7 @@ const accountSchema = new mongoose.Schema(
       // Service defaults (businessType === 'service')
       defaultClientStatus: { type: String, trim: true, default: '' },
 
-      // Inbox channel configuration
-      // Unique slug used as the local-part of the merchant's inbound email address
-      // e.g. johns-bakery → johns-bakery@pigea-inbox.prolanx.co
-      inboxSlug: { type: String, trim: true, lowercase: true, default: null },
+
     },
 
     // Onboarding (nested object, default null)
@@ -113,8 +110,6 @@ const accountSchema = new mongoose.Schema(
 // Index for faster lookups
 accountSchema.index({ verificationToken: 1 });
 accountSchema.index({ passwordResetToken: 1 });
-accountSchema.index({ 'businessInfo.inboxSlug': 1 }, { unique: true, sparse: true });
-
 const Account = mongoose.model('Account', accountSchema);
 
 export default Account;

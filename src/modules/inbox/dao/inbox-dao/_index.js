@@ -2,7 +2,12 @@ import { createMessage } from '@modules/inbox/dao/inbox-dao/createMessage.dao.js
 import { findByExternalId } from '@modules/inbox/dao/inbox-dao/findByExternalId.dao.js';
 import { findById } from '@modules/inbox/dao/inbox-dao/findById.dao.js';
 import { listByMerchant } from '@modules/inbox/dao/inbox-dao/listByMerchant.dao.js';
+import { getSummaryByMerchant } from '@modules/inbox/dao/inbox-dao/getSummaryByMerchant.dao.js';
 import { updateStatus } from '@modules/inbox/dao/inbox-dao/updateStatus.dao.js';
+import { listChannelsByMerchant } from '@modules/inbox/dao/channel-dao/listChannelsByMerchant.dao.js';
+import { connectChannel } from '@modules/inbox/dao/channel-dao/connectChannel.dao.js';
+import { disconnectChannel } from '@modules/inbox/dao/channel-dao/disconnectChannel.dao.js';
+import { updateChannelConfig } from '@modules/inbox/dao/channel-dao/updateChannelConfig.dao.js';
 
 /**
  * InboxDAO — database layer for the inbox module.
@@ -25,8 +30,28 @@ class InboxDAO {
     return listByMerchant.call(this, merchantId, options);
   }
 
+  async getSummaryByMerchant(merchantId) {
+    return getSummaryByMerchant.call(this, merchantId);
+  }
+
   async updateStatus(id, merchantId, status) {
     return updateStatus.call(this, id, merchantId, status);
+  }
+
+  async listChannelsByMerchant(merchantId) {
+    return listChannelsByMerchant.call(this, merchantId);
+  }
+
+  async connectChannel(merchantId, channelType, payload) {
+    return connectChannel.call(this, merchantId, channelType, payload);
+  }
+
+  async disconnectChannel(merchantId, channelType) {
+    return disconnectChannel.call(this, merchantId, channelType);
+  }
+
+  async updateChannelConfig(merchantId, channelType, payload) {
+    return updateChannelConfig.call(this, merchantId, channelType, payload);
   }
 }
 

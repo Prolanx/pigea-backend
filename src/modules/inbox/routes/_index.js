@@ -1,11 +1,11 @@
 import express from 'express';
 import createInboxWebhookRoutes from '@modules/inbox/routes/webhook.routes.js';
 import createInboxMessageRoutes from '@modules/inbox/routes/message.routes.js';
-import createInboxSettingsRoutes from '@modules/inbox/routes/inbox-settings.routes.js';
+import createInboxChannelRoutes from '@modules/inbox/routes/channel.routes.js';
 
 /**
  * Main Inbox route factory.
- * Combines webhook (public), message management, and settings routes.
+ * Combines webhook (public), message management, and channel routes.
  *
  * @param {InboxController} controller
  * @returns {express.Router}
@@ -19,8 +19,8 @@ function createInboxRoutes(controller) {
   // Authenticated: merchant message management
   router.use('/messages', createInboxMessageRoutes(controller));
 
-  // Authenticated: inbox settings (slug management)
-  router.use('/settings', createInboxSettingsRoutes(controller));
+  // Authenticated: channel connection management
+  router.use('/channels', createInboxChannelRoutes(controller));
 
   return router;
 }

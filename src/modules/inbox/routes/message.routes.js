@@ -4,6 +4,7 @@ import { validateDto } from '@common/middleware/validate-dto.js';
 import { ResponseUtils } from '@common/utilities/response.js';
 import listMessagesDtoSchema from '@modules/inbox/dto/list-messages.validation.js';
 import updateMessageStatusDtoSchema from '@modules/inbox/dto/update-message-status.validation.js';
+import replyToMessageDtoSchema from '@modules/inbox/dto/reply-to-message.validation.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 import { getRouteErrorMessage, getRouteErrorStatusCode } from '@common/utilities/route-error.util.js';
 
@@ -31,6 +32,28 @@ function createInboxMessageRoutes(controller) {
         const result = await controller.listMessages(req.user.accountId, req.query);
         return res.status(200).json(
           ResponseUtils.success(InboxConstants.SUCCESS.MESSAGES_RETRIEVED, result)
+        );
+      } catch (error) {
+        return res.status(getRouteErrorStatusCode(error)).json(
+          ResponseUtils.error(getRouteErrorMessage(error, InboxConstants.ERRORS.LIST_FAILED), null)
+        );
+      }
+    }
+  );
+
+  /**
+   * GET /summary
+   * Get inbox counters for the authenticated merchant.
+   */
+  router.get(
+    '/summary',
+    authenticate,
+    authorize(['merchant']),
+    async (req, res) => {
+      try {
+        const summary = await controller.getMessageSummary(req.user.accountId);
+        return res.status(200).json(
+          ResponseUtils.success(InboxConstants.SUCCESS.SUMMARY_RETRIEVED, summary)
         );
       } catch (error) {
         return res.status(getRouteErrorStatusCode(error)).json(
@@ -84,6 +107,33 @@ function createInboxMessageRoutes(controller) {
       } catch (error) {
         return res.status(getRouteErrorStatusCode(error)).json(
           ResponseUtils.error(getRouteErrorMessage(error, InboxConstants.ERRORS.STATUS_UPDATE_FAILED), null)
+        );
+      }
+    }
+  );
+
+  /**
+   * POST /:id/reply
+   * Send an outbound email reply for an existing inbox message.
+   */
+  router.post(
+    '/:id/reply',
+    authenticate,
+    authorize(['merchant']),
+    validateDto(replyToMessageDtoSchema, InboxConstants.ERRORS.REPLY_FAILED),
+    async (req, res) => {
+      try {
+        const reply = await controller.replyToMessage(
+          req.params.id,
+          req.user.accountId,
+          req.body,
+        );
+        return res.status(201).json(
+          ResponseUtils.success(InboxConstants.SUCCESS.REPLY_SENT, reply)
+        );
+      } catch (error) {
+        return res.status(getRouteErrorStatusCode(error)).json(
+          ResponseUtils.error(getRouteErrorMessage(error, InboxConstants.ERRORS.REPLY_FAILED), null)
         );
       }
     }

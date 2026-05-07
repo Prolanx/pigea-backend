@@ -1,0 +1,78 @@
+### Inbox - Reply to Message (Merchant)
+### Sends outbound email reply using backend email adapter and stores outbound inbox message
+
+# @baseUrl = http://localhost:3000
+@baseUrl = https://pigea-backend.onrender.com
+
+@merchantToken = REPLACE_WITH_VALID_MERCHANT_TOKEN
+@messageId = REPLACE_WITH_INBOUND_MESSAGE_ID
+
+###############################################
+# SUCCESS
+###############################################
+
+### Reply to an inbox message
+POST {{baseUrl}}/inbox/messages/{{messageId}}/reply
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "bodyText": "Hi there, thanks for reaching out. We have received your message and will follow up shortly."
+}
+
+###
+
+### Reply with explicit subject override
+POST {{baseUrl}}/inbox/messages/{{messageId}}/reply
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "subject": "Re: Follow-up on your request",
+  "bodyText": "Thanks for the details. Here is our response..."
+}
+
+###############################################
+# VALIDATION ERRORS
+###############################################
+
+### Missing bodyText
+POST {{baseUrl}}/inbox/messages/{{messageId}}/reply
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{}
+
+###
+
+### Empty bodyText
+POST {{baseUrl}}/inbox/messages/{{messageId}}/reply
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "bodyText": ""
+}
+
+###############################################
+# AUTH / PERMISSION / NOT FOUND
+###############################################
+
+### No token (401)
+POST {{baseUrl}}/inbox/messages/{{messageId}}/reply
+Content-Type: application/json
+
+{
+  "bodyText": "Unauthorized attempt"
+}
+
+###
+
+### Invalid message id or not owned by merchant (404)
+POST {{baseUrl}}/inbox/messages/000000000000000000000000/reply
+Authorization: Bearer {{merchantToken}}
+Content-Type: application/json
+
+{
+  "bodyText": "This should fail for missing message"
+}

@@ -158,7 +158,7 @@ export function createDependencies() {
 
   // Controllers - Inbox
   const inboxDAO = new InboxDAO();
-  const inboxController = new InboxController(inboxDAO, accountDAO);
+  const inboxController = new InboxController(inboxDAO, accountDAO, emailAdapter);
 
   // Return organized dependencies
   return {
