@@ -1,7 +1,8 @@
 ### Variables
 @baseUrl = http://localhost:3000
+# @baseUrl =https://pigea-backend.onrender.com
 @apiUrl = {{baseUrl}}
-@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTY1MTQ1OSwiZXhwIjoxNzc1ODI0MjU5fQ.M3IO69tvuroeRDHYqp9IGaGrGiievtUlkwLaQ5B2O9A
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3ODE0NzU4NiwiZXhwIjoxNzc4MzIwMzg2fQ.LtBJ291k0vT1drjz7B7fH999zHb5P_-3zrNJNiiPVIg
 @invoiceCustomerId=69d7b5160968f3d1538ce5d9
 @invoiceStatus = draft
 @invoiceCustomerEmail = jack.daramola@kihasl.com
@@ -21,7 +22,9 @@ Authorization: Bearer {{accessToken}}
   "items": [
     { "name": "Service A", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 },
     { "name": "Service B", "itemCategory": "service", "quantity": 15, "unitPrice": 1150.00 },
-    { "name": "Service C", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 } 
+    { "name": "Service C", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 } ,
+     { "name": "Service D", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 } ,
+      { "name": "Service E", "itemCategory": "service", "quantity": 10, "unitPrice": 350.00 } 
      ],
   "tax": 0,
   "discount": 0

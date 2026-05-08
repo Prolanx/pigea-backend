@@ -1,6 +1,7 @@
 import express from 'express';
 import createInboxWebhookRoutes from '@modules/inbox/routes/webhook.routes.js';
 import createInboxMessageRoutes from '@modules/inbox/routes/message.routes.js';
+import createInboxConversationRoutes from '@modules/inbox/routes/conversation.routes.js';
 import createInboxChannelRoutes from '@modules/inbox/routes/channel.routes.js';
 
 /**
@@ -18,6 +19,9 @@ function createInboxRoutes(controller) {
 
   // Authenticated: merchant message management
   router.use('/messages', createInboxMessageRoutes(controller));
+
+  // Authenticated: conversation (ticket) management
+  router.use('/conversations', createInboxConversationRoutes(controller));
 
   // Authenticated: channel connection management
   router.use('/channels', createInboxChannelRoutes(controller));

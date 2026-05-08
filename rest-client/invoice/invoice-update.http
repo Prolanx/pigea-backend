@@ -1,8 +1,8 @@
 ### Variables
 @baseUrl = http://localhost:3000
 @apiUrl = {{baseUrl}}
-@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3NTE5NDM5OSwiZXhwIjoxNzc1MzY3MTk5fQ.uyuFNP_DOcxm7Lb3CnBr9JAeFo0NxuzcWpClwhfwnkE
-@invoiceId=69d10bfa1b03fb524a3f7d41
+@accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI2OTkyMTQ5YTYwZWUxYWE0ZjA4ODlhYmQiLCJlbWFpbCI6InRlbWkuZGFyYW1vbGFAa2loYXNsLmNvbSIsInJvbGUiOiJtZXJjaGFudCIsImlhdCI6MTc3ODE0NzU4NiwiZXhwIjoxNzc4MzIwMzg2fQ.LtBJ291k0vT1drjz7B7fH999zHb5P_-3zrNJNiiPVIg
+@invoiceId=69fc649d81c84c42143c27b4
 @invoiceCustomerId=697018f2b9a77f1977fb7c5f
 @invoiceStatus = auto
 
@@ -12,7 +12,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "notes": "Updated notes for the invoice tryin gthe auto now",
+  "notes": "Updated notes for the invoice using auto -status",
    "status": "{{invoiceStatus}}"
 }
 

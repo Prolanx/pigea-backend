@@ -9,8 +9,6 @@ import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 import { getRouteErrorMessage, getRouteErrorStatusCode } from '@common/utilities/route-error.util.js';
 
 /**
- * Authenticated merchant routes for managing inbox messages.
- *
  * @param {InboxController} controller
  * @returns {express.Router}
  */

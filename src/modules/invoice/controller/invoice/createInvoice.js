@@ -142,6 +142,8 @@ export async function createInvoiceAction(controller, invoiceData, merchantId) {
 
     return formatted;
   } catch (error) {
+
+    console.log('Error in createInvoiceAction:', error);
     if (error instanceof DAOError) {
       throw error;
     }

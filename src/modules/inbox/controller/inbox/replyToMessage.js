@@ -90,6 +90,11 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       await this.inboxDAO.updateStatus(messageId, merchantId, InboxConstants.STATUS.READ);
     }
 
+    // Update the conversation's lastMessageAt timestamp
+    if (created?.threadKey) {
+      await this.inboxDAO.touchConversation(created.threadKey, merchantId, created.receivedAt);
+    }
+
     return {
       id: created?._id,
       threadKey: created?.threadKey,

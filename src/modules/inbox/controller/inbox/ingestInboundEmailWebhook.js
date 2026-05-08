@@ -134,6 +134,40 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
           externalMessageId,
         });
         ingested++;
+
+        // Find or create the conversation for this thread
+        const conversation = await this.inboxDAO.findOrCreateConversation(
+          merchant._id,
+          created.threadKey,
+          InboxConstants.CHANNEL.EMAIL,
+          {
+            address: fromAddress || null,
+            displayName: fromName || null,
+          },
+        );
+
+        // Update lastMessageAt on the conversation
+        await this.inboxDAO.touchConversation(
+          created.threadKey,
+          merchant._id,
+          created.receivedAt,
+        );
+
+        // Emit real-time event to the merchant's socket room
+        if (this.socketAdapter) {
+          this.socketAdapter.emit(`merchant:${String(merchant._id)}`, 'new_message', {
+            conversationId: String(conversation._id),
+            ticketNumber: conversation.ticketNumber,
+            threadKey: created.threadKey,
+            messageId: String(created._id),
+            channelType: created.channelType,
+            direction: created.direction,
+            sender: created.sender,
+            bodyText: created.bodyText,
+            subject: created.subject,
+            receivedAt: created.receivedAt,
+          });
+        }
       }
     }
 

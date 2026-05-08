@@ -4,12 +4,14 @@
  */
 
 import 'dotenv/config';
+import http from 'http';
 import express from 'express';
 import { createDependencies } from './app/dependencies.js';
 import { applyMiddleware, applyErrorHandlers } from './app/middleware.js';
 import { registerRoutes } from './app/routes.js';
 import { connectDatabase, startServer, registerShutdownHandlers } from './app/startup.js';
 import { initFirebase } from '@adapters/storage/init.js';
+import { socketAdapter } from '@adapters/socket/_index.js';
 
 
 
@@ -37,12 +39,21 @@ async function bootstrap() {
   // Apply error handlers (must be after routes)
   applyErrorHandlers(app);
 
+  // Wrap Express in an http.Server so Socket.io can share the same port
+  const httpServer = http.createServer(app);
+
+  // Attach Socket.io — self-contained, Express is untouched
+  socketAdapter.init(httpServer);
+
+  // Inject socket adapter into InboxController after it is initialised
+  dependencies.getInboxController().socketAdapter = socketAdapter;
+
   // Register shutdown handlers
   registerShutdownHandlers();
 
   // Start the server
   const PORT = process.env.PORT || 3000;
-  await startServer(app, PORT);
+  await startServer(httpServer, PORT);
 
   return app;
 }

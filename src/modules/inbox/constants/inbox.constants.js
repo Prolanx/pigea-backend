@@ -45,6 +45,12 @@ export const InboxConstants = {
     MANUAL: 'manual',
   },
 
+  // ─── Conversation Status ──────────────────────────────────────────────────
+  CONVERSATION_STATUS: {
+    OPEN: 'open',
+    RESOLVED: 'resolved',
+  },
+
   // ─── Message Status ───────────────────────────────────────────────────────
   STATUS: {
     UNREAD: 'unread',
@@ -60,6 +66,10 @@ export const InboxConstants = {
     MESSAGE_RETRIEVED: 'Message retrieved successfully',
     REPLY_SENT: 'Reply sent successfully',
     STATUS_UPDATED: 'Message status updated successfully',
+    CONVERSATIONS_RETRIEVED: 'Conversations retrieved successfully',
+    CONVERSATION_RETRIEVED: 'Conversation retrieved successfully',
+    CONVERSATION_RESOLVED: 'Conversation resolved successfully',
+    THREAD_RETRIEVED: 'Thread retrieved successfully',
     CHANNELS_RETRIEVED: 'Inbox channels retrieved successfully',
     CHANNELS_SUMMARY_RETRIEVED: 'Inbox channel summary retrieved successfully',
     CHANNEL_CONNECTED: 'Channel connected successfully',
@@ -84,6 +94,11 @@ export const InboxConstants = {
     INVALID_STATUS: 'Invalid message status value',
     DUPLICATE_SKIPPED: 'Duplicate message skipped',
     INVALID_CHANNEL_TYPE: 'Invalid channel type',
+    CONVERSATION_NOT_FOUND: 'Conversation not found',
+    CONVERSATION_ALREADY_RESOLVED: 'Conversation is already resolved',
+    CONVERSATION_LIST_FAILED: 'Failed to retrieve conversations',
+    CONVERSATION_RESOLVE_FAILED: 'Failed to resolve conversation',
+    THREAD_GET_FAILED: 'Failed to retrieve conversation thread',
     CHANNELS_LIST_FAILED: 'Failed to retrieve channels',
     CHANNELS_SUMMARY_FAILED: 'Failed to retrieve channel summary',
     CHANNEL_CONNECT_FAILED: 'Failed to connect channel',
@@ -115,6 +130,10 @@ export const InboxConstants = {
     UPDATE_FAILED: 'Failed to update inbox message',
     COUNT_FAILED: 'Failed to count inbox messages',
     FIND_BY_EXTERNAL_ID_FAILED: 'Failed to find message by external ID',
+    CONVERSATION_CREATE_FAILED: 'Failed to create conversation',
+    CONVERSATION_FIND_FAILED: 'Failed to retrieve conversation',
+    CONVERSATION_LIST_FAILED: 'Failed to list conversations',
+    CONVERSATION_UPDATE_FAILED: 'Failed to update conversation',
     LIST_CHANNELS_FAILED: 'Failed to list channel connections',
     CONNECT_CHANNEL_FAILED: 'Failed to connect channel',
     DISCONNECT_CHANNEL_FAILED: 'Failed to disconnect channel',

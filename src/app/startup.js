@@ -26,25 +26,26 @@ export async function connectDatabase() {
 }
 
 /**
- * Starts the Express HTTP server
- * @param {Express.Application} app - Express application instance
+ * Starts the HTTP server (Express + Socket.io share the same instance).
+ * @param {import('http').Server} httpServer - Node http.Server wrapping Express
  * @param {number} port - Port number to listen on
  * @returns {Promise<void>}
  */
-export async function startServer(app, port = 3000) {
+export async function startServer(httpServer, port = 3000) {
   const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
     : [];
 
   try {
     // Start listening
-    app.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log('');
       console.log('═══════════════════════════════════════');
       console.log(`✓ Server running on port ${port}`);
       console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`✓ API available at http://localhost:${port}`);
       console.log(`✓ Health check: http://localhost:${port}/health`);
+      console.log(`✓ WebSocket: ws://localhost:${port}`);
       if (ALLOWED_ORIGINS.length > 0) {
         console.log(`✓ CORS enabled for: ${ALLOWED_ORIGINS.join(', ')}`);
       } else {

@@ -1,9 +1,12 @@
-import { ingestInboundEmailWebhook } from '@modules/inbox/controller/inbox/ingestInboundEmailWebhook.js';
+﻿import { ingestInboundEmailWebhook } from '@modules/inbox/controller/inbox/ingestInboundEmailWebhook.js';
 import { listMessages } from '@modules/inbox/controller/inbox/listMessages.js';
 import { getMessageSummary } from '@modules/inbox/controller/inbox/getMessageSummary.js';
 import { getMessageById } from '@modules/inbox/controller/inbox/getMessageById.js';
 import { updateMessageStatus } from '@modules/inbox/controller/inbox/updateMessageStatus.js';
 import { replyToMessage } from '@modules/inbox/controller/inbox/replyToMessage.js';
+import { listConversations } from '@modules/inbox/controller/inbox/listConversations.js';
+import { getConversationThread } from '@modules/inbox/controller/inbox/getConversationThread.js';
+import { resolveConversation } from '@modules/inbox/controller/inbox/resolveConversation.js';
 import { listChannels } from '@modules/inbox/controller/inbox/listChannels.js';
 import { getChannelSummary } from '@modules/inbox/controller/inbox/getChannelSummary.js';
 import { connectChannel } from '@modules/inbox/controller/inbox/connectChannel.js';
@@ -11,7 +14,7 @@ import { disconnectChannel } from '@modules/inbox/controller/inbox/disconnectCha
 import { updateChannelConfig } from '@modules/inbox/controller/inbox/updateChannelConfig.js';
 
 /**
- * InboxController — business logic layer for the inbox module.
+ * InboxController â€” business logic layer for the inbox module.
  * Receives all dependencies via constructor (DI pattern).
  */
 class InboxController {
@@ -19,11 +22,13 @@ class InboxController {
    * @param {InboxDAO} inboxDAO
    * @param {AccountDAO} accountDAO - Required to resolve merchant by inbox slug
    * @param {Object} emailAdapter - Outbound email adapter
+   * @param {Object} [socketAdapter] - Real-time socket adapter (optional)
    */
-  constructor(inboxDAO, accountDAO, emailAdapter) {
+  constructor(inboxDAO, accountDAO, emailAdapter, socketAdapter = null) {
     this.inboxDAO = inboxDAO;
     this.accountDAO = accountDAO;
     this.emailAdapter = emailAdapter;
+    this.socketAdapter = socketAdapter;
   }
 
   async ingestInboundEmailWebhook(items, traceContext = {}) {
@@ -48,6 +53,18 @@ class InboxController {
 
   async replyToMessage(messageId, merchantId, payload) {
     return replyToMessage.call(this, messageId, merchantId, payload);
+  }
+
+  async listConversations(merchantId, queryParams) {
+    return listConversations.call(this, merchantId, queryParams);
+  }
+
+  async getConversationThread(conversationId, merchantId) {
+    return getConversationThread.call(this, conversationId, merchantId);
+  }
+
+  async resolveConversation(conversationId, merchantId) {
+    return resolveConversation.call(this, conversationId, merchantId);
   }
 
   async listChannels(merchantId) {

@@ -8,6 +8,14 @@ import { listChannelsByMerchant } from '@modules/inbox/dao/channel-dao/listChann
 import { connectChannel } from '@modules/inbox/dao/channel-dao/connectChannel.dao.js';
 import { disconnectChannel } from '@modules/inbox/dao/channel-dao/disconnectChannel.dao.js';
 import { updateChannelConfig } from '@modules/inbox/dao/channel-dao/updateChannelConfig.dao.js';
+import {
+  findOrCreateConversation,
+  listConversationsByMerchant,
+  findConversationById,
+  resolveConversation,
+  touchConversation,
+  getThreadMessages,
+} from '@modules/inbox/dao/conversation-dao/_index.js';
 
 /**
  * InboxDAO — database layer for the inbox module.
@@ -52,6 +60,32 @@ class InboxDAO {
 
   async updateChannelConfig(merchantId, channelType, payload) {
     return updateChannelConfig.call(this, merchantId, channelType, payload);
+  }
+
+  // ── Conversation methods ────────────────────────────────────────────────────
+
+  async findOrCreateConversation(merchantId, threadKey, channelType, customerInfo) {
+    return findOrCreateConversation.call(this, merchantId, threadKey, channelType, customerInfo);
+  }
+
+  async listConversationsByMerchant(merchantId, options) {
+    return listConversationsByMerchant.call(this, merchantId, options);
+  }
+
+  async findConversationById(id, merchantId) {
+    return findConversationById.call(this, id, merchantId);
+  }
+
+  async resolveConversation(id, merchantId) {
+    return resolveConversation.call(this, id, merchantId);
+  }
+
+  async touchConversation(threadKey, merchantId, timestamp) {
+    return touchConversation.call(this, threadKey, merchantId, timestamp);
+  }
+
+  async getThreadMessages(threadKey, merchantId) {
+    return getThreadMessages.call(this, threadKey, merchantId);
   }
 }
 

@@ -158,7 +158,7 @@ export function createDependencies() {
 
   // Controllers - Inbox
   const inboxDAO = new InboxDAO();
-  const inboxController = new InboxController(inboxDAO, accountDAO, emailAdapter);
+  const inboxController = new InboxController(inboxDAO, accountDAO, emailAdapter, null); // socketAdapter injected later via inboxController.socketAdapter = io
 
   // Return organized dependencies
   return {
@@ -178,5 +178,6 @@ export function createDependencies() {
     marketing: { marketingController },
     businessInfo: { businessInfoController },
     inbox: { inboxController },
+    getInboxController: () => inboxController,
   };
 }
