@@ -118,6 +118,14 @@ const inboxMessageSchema = new mongoose.Schema(
       default: Date.now,
       index: true,
     },
+
+    // Template metadata for traceability
+    template: {
+      id: { type: String, default: null },
+      name: { type: String, default: null },
+      originalContent: { type: String, default: null },
+      resolvedVariables: { type: mongoose.Schema.Types.Mixed, default: {} },
+    },
   },
   {
     timestamps: true,

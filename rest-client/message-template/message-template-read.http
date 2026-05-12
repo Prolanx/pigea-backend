@@ -1,0 +1,13 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/messages/templates
+@accessToken = REPLACE_WITH_MERCHANT_BEARER_TOKEN
+@templateId = REPLACE_WITH_TEMPLATE_ID
+
+### List Message Templates
+GET {{apiUrl}}
+Authorization: Bearer {{accessToken}}
+
+### Get Message Template By ID
+GET {{apiUrl}}/{{templateId}}
+Authorization: Bearer {{accessToken}}

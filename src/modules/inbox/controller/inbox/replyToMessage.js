@@ -1,6 +1,12 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 
+function renderReplyBody(templateText, { companyName, customerName }) {
+  return String(templateText || '')
+    .replace(/\{\{company_name\}\}/g, companyName)
+    .replace(/\{\{customer_name\}\}/g, customerName);
+}
+
 /**
  * Send an outbound email reply for an inbox message and persist it in inbox history.
  *
@@ -33,17 +39,36 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       throw new ControllerError(InboxConstants.ERRORS.REPLY_MERCHANT_NOT_FOUND, 404);
     }
 
-    const bodyText = String(payload.bodyText || '').trim();
     const subjectBase = String(payload.subject || original.subject || '').trim();
     const subject = subjectBase.toLowerCase().startsWith('re:')
       ? subjectBase
       : `Re: ${subjectBase || 'Message'}`;
 
-    const merchantDisplayName =
-      `${merchant.firstName || ''} ${merchant.lastName || ''}`.trim() ||
-      merchant.businessInfo?.name ||
-      merchant.email ||
-      'Merchant';
+    const merchantBusinessName = String(merchant.businessInfo?.name || '').trim();
+    const merchantFromName = merchantBusinessName || merchant.email || 'Merchant';
+
+    const emailChannelAddress = String(
+      original.recipients?.find((recipient) => recipient?.address)?.address || ''
+    ).trim() || null;
+
+    if (!emailChannelAddress) {
+      throw new ControllerError(
+        'Email reply cannot be sent because the merchant inbox address could not be resolved.',
+        400,
+      );
+    }
+
+    const companyName = merchantBusinessName || merchantFromName;
+
+    const customerName =
+      String(original.sender?.displayName || '').trim() ||
+      String(original.sender?.address || '').trim() ||
+      'Customer';
+
+    const bodyText = renderReplyBody(payload.bodyText, {
+      companyName,
+      customerName,
+    }).trim();
 
     const bodyHtml = bodyText.replace(/\n/g, '<br>');
 
@@ -52,9 +77,11 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       subject,
       text: bodyText,
       html: bodyHtml,
-      replyTo: merchant.email || undefined,
-      fromName: merchantDisplayName,
+      replyTo: emailChannelAddress,
+      from: `"${merchantFromName}" <${emailChannelAddress}>`,
     });
+
+    const templateMetadata = payload.template || {};
 
     const created = await this.inboxDAO.createMessage({
       merchantId,
@@ -63,8 +90,8 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       externalMessageId: null,
       threadKey: original.threadKey || original.externalMessageId || null,
       sender: {
-        address: merchant.email || null,
-        displayName: merchantDisplayName,
+        address: emailChannelAddress,
+        displayName: merchantFromName,
       },
       recipients: [
         {
@@ -79,6 +106,12 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       metadata: {
         type: 'merchant_reply',
         replyToMessageId: String(original._id),
+      },
+      template: {
+        id: templateMetadata.id || null,
+        name: templateMetadata.name || null,
+        originalContent: templateMetadata.originalContent || null,
+        resolvedVariables: templateMetadata.resolvedVariables || {},
       },
       sourceType: InboxConstants.SOURCE.MANUAL,
       status: InboxConstants.STATUS.READ,
@@ -109,6 +142,15 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
     if (error instanceof DAOError || error instanceof ControllerError) {
       throw error;
     }
+
+    if (error?.name === 'EmailTransportError') {
+      const statusCode = Number(error?.statusCode || 502);
+      const message = error?.isTimeout
+        ? 'Reply could not be sent right now because the email server timed out. Please try again.'
+        : 'Reply could not be sent because the email service is temporarily unavailable. Please try again.';
+      throw new ControllerError(message, statusCode);
+    }
+
     throw new ControllerError(`${InboxConstants.ERRORS.REPLY_FAILED}: ${error.message}`);
   }
 }

@@ -153,6 +153,9 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
           created.receivedAt,
         );
 
+        // Auto-create CRM contact from email sender (non-blocking)
+        await this.createContactFromEmail(merchant, fromAddress, fromName);
+
         // Emit real-time event to the merchant's socket room
         if (this.socketAdapter) {
           this.socketAdapter.emit(`merchant:${String(merchant._id)}`, 'new_message', {

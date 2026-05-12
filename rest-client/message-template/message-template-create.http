@@ -1,0 +1,15 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/messages/templates
+@accessToken = REPLACE_WITH_MERCHANT_BEARER_TOKEN
+
+### Create Message Template
+POST {{apiUrl}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Greeting & Welcome",
+  "channel": "all",
+  "content": "Hi {customer_name}, welcome to {company_name}!"
+}

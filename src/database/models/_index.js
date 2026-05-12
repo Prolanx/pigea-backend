@@ -8,6 +8,7 @@ import InboxChannelConnection from './InboxChannelConnection.js';
 import InboxMessage from './InboxMessage.js';
 import Invoice from './Invoice.js';
 import Message from './Message.js';
+import MessageTemplate from './MessageTemplate.js';
 import Product from './Product.js';
 import SocialChannel from './SocialChannel.js';
 import Status from './Status.js';
@@ -24,6 +25,7 @@ export const models = {
   InboxMessage,
   Invoice,
   Message,
+  MessageTemplate,
   Product,
   SocialChannel,
   Status,

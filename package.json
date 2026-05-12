@@ -6,7 +6,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "tsx src/server.js",
-    "dev": "tsx watch src/server.js"
+    "dev": "tsx watch src/server.js",
+    "migrate:general-system-group": "node src/scripts/backfill-system-general-contact-group.js --apply",
+    "migrate:general-system-group:dry": "node src/scripts/backfill-system-general-contact-group.js --dry-run"
   },
   "author": "Prolanx",
   "license": "ISC",

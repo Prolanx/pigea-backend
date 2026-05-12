@@ -39,6 +39,7 @@ class ContactTypeController {
         name,
         description,
         fields: fieldsWithEmail,
+        isSystemGroup: false,
       });
 
       const customFields = await this.fieldDefinitionDAO.findByMerchant(merchantId);
@@ -125,6 +126,15 @@ class ContactTypeController {
         throw new ControllerError('You do not have permission to update this contact type', 403);
       }
 
+      if (existingContactType.isSystemGroup) {
+        throw new ControllerError('Cannot modify system contact groups', 403);
+      }
+
+      // Never allow clients to toggle system-group ownership.
+      if (Object.prototype.hasOwnProperty.call(updateData, 'isSystemGroup')) {
+        delete updateData.isSystemGroup;
+      }
+
       // Validate fields if provided
       if (updateData.fields) {
         // Auto-inject sys_email as required field
@@ -163,6 +173,10 @@ class ContactTypeController {
       const contactType = await this.contactTypeDAO.findById(id, merchantId);
       if (!contactType) {
         throw new ControllerError('You do not have permission to delete this contact type', 403);
+      }
+
+      if (contactType.isSystemGroup) {
+        throw new ControllerError('Cannot modify system contact groups', 403);
       }
 
       // Delete all contacts of this type

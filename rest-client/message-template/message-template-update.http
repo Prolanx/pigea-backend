@@ -1,0 +1,16 @@
+### Variables
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/messages/templates
+@accessToken = REPLACE_WITH_MERCHANT_BEARER_TOKEN
+@templateId = REPLACE_WITH_TEMPLATE_ID
+
+### Update Message Template
+PUT {{apiUrl}}/{{templateId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Order Status Delay",
+  "channel": "email",
+  "content": "Dear {{customer_name}}, we apologize but your order {{order_number}} has been delayed."
+}

@@ -93,7 +93,6 @@ const accountSchema = new mongoose.Schema(
       // Service defaults (businessType === 'service')
       defaultClientStatus: { type: String, trim: true, default: '' },
 
-
     },
 
     // Onboarding (nested object, default null)

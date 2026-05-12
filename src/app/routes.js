@@ -11,6 +11,7 @@ import CategoryModule from '@modules/category/_index.js';
 import ProductModule from '@modules/product/_index.js';
 import CrmModule from '@modules/crm/_index.js';
 import InboxModule from '@modules/inbox/_index.js';
+import MessageTemplateModule from '@modules/message-template/_index.js';
 import SocialModule from '@modules/social/_index.js';
 import MarketingModule from '@modules/marketing/_index.js';
 import BusinessInfoModule from '@modules/business-info/_index.js';
@@ -26,6 +27,7 @@ const { createCategoryRoutes } = CategoryModule.routes;
 const { createProductRoutes } = ProductModule.routes;
 const { createCrmRoutes } = CrmModule.routes;
 const { createInboxRoutes } = InboxModule.routes;
+const { createMessageTemplateRoutes } = MessageTemplateModule.routes;
 const { createChannelRoutes } = SocialModule.routes;
 const { createMarketingRoutes } = MarketingModule.routes;
 const { createBusinessInfoRoutes } = BusinessInfoModule.routes;
@@ -84,6 +86,9 @@ export function registerRoutes(app, dependencies) {
   // Inbox routes (webhook + merchant messages)
   app.use('/inbox', createInboxRoutes(dependencies.inbox.inboxController));
 
+  // Message template routes
+  app.use('/messages/templates', createMessageTemplateRoutes(dependencies.messageTemplate.messageTemplateController));
+
   // Health & Status endpoints
   app.get('/health', (req, res) => {
     res.status(200).json({
@@ -107,6 +112,7 @@ export function registerRoutes(app, dependencies) {
         products: '/products',
         crm: '/crm',
         inbox: '/inbox',
+        messageTemplates: '/messages/templates',
         marketing: '/marketing',
         social: '/social/channels'
       }

@@ -3,7 +3,7 @@ import { db } from '@database/_index.js';
 import { constants } from '@modules/auth/constants/_index.js';
 
 const { DAOError } = common.errors;
-const { Account, Category } = db.models;
+const { Account, Category, ContactType } = db.models;
 const { AuthConstants } = constants;
 
 export async function createMerchantWithDefaults(accountData) {
@@ -15,6 +15,19 @@ export async function createMerchantWithDefaults(accountData) {
       description: AuthConstants.DEFAULTS.CATEGORY_DESCRIPTION,
       isDefault: true,
       merchantId: account._id,
+    });
+
+    // Create default "General" contact type with system fields (name and email)
+    await ContactType.create({
+      name: 'General',
+      description: 'Default contact type for emails and general inquiries',
+      merchantId: account._id,
+      fields: [
+        { id: 'sys_email', required: true },   // Email is required
+        { id: 'sys_name', required: false },   // Name is optional
+      ],
+      contactCount: 0,
+      isSystemGroup: true,
     });
 
     return account;

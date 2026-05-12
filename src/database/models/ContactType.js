@@ -43,6 +43,14 @@ const contactTypeSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    // Flag to mark system-controlled groups (e.g., "General" for email auto-creation)
+    // System groups cannot be modified or deleted by merchants
+    isSystemGroup: {
+      type: Boolean,
+      required: true,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,

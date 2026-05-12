@@ -40,6 +40,47 @@ class ContactTypeDAO {
   }
 
   /**
+   * Find contact type by name and merchant
+   * @param {string} name - Contact type name
+   * @param {string} merchantId - Merchant ID
+   * @returns {Promise<Object|null>} Contact type or null
+   * @throws {DAOError} If database operation fails
+   */
+  async findByName(name, merchantId) {
+    try {
+      const contactType = await ContactType.findOne({ name, merchantId });
+      return contactType;
+    } catch (error) {
+      throw new DAOError(`Failed to find contact type by name: ${error.message}`);
+    }
+  }
+
+  /**
+   * Find the system-owned General contact group for a merchant.
+   * Falls back to legacy General groups for backward compatibility.
+   * @param {string} merchantId - Merchant ID
+   * @returns {Promise<Object|null>} Contact type or null
+   * @throws {DAOError} If database operation fails
+   */
+  async findSystemGeneralGroup(merchantId) {
+    try {
+      const systemGeneral = await ContactType.findOne({
+        merchantId,
+        name: 'General',
+        isSystemGroup: true,
+      });
+
+      if (systemGeneral) {
+        return systemGeneral;
+      }
+
+      return await ContactType.findOne({ merchantId, name: 'General' });
+    } catch (error) {
+      throw new DAOError(`Failed to find system General contact type: ${error.message}`);
+    }
+  }
+
+  /**
    * Find contact type by ID
    * @param {string} id - Contact type ID
    * @param {string} merchantId - Merchant ID

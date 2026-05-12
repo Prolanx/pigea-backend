@@ -9,11 +9,22 @@ import nodemailer from 'nodemailer';
  * Create email transporter
  * @returns {Object} Nodemailer transporter
  */
+const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 15000);
+
+const parseBoolean = (value, fallback = false) => {
+  if (value === undefined || value === null || value === '') return fallback;
+  return String(value).toLowerCase() === 'true';
+};
+
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 587,
-    secure: false, // true for 465, false for other ports
+    port: Number(process.env.EMAIL_PORT || 587),
+    secure: parseBoolean(process.env.EMAIL_SECURE, false),
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS,
+    dnsTimeout: SMTP_TIMEOUT_MS,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
@@ -32,14 +43,28 @@ const createTransporter = () => {
  * @param {string} options.fromName - Display name for sender (optional)
  * @returns {Promise<Object>} Email send result
  */
-export const sendEmail = async ({ to, subject, text, html, replyTo, fromName }) => {
+const parseEmailAddress = (formattedAddress) => {
+  if (!formattedAddress || typeof formattedAddress !== 'string') return null;
+  const match = formattedAddress.match(/<([^>]+)>/);
+  return match ? match[1].trim() : formattedAddress.trim();
+};
+
+export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, from }) => {
   const transporter = createTransporter();
-  
-  // Use custom display name if provided, otherwise use default
-  const fromAddress = fromName 
-    ? `"${fromName}" <${process.env.EMAIL_USER || 'noreply@bizflow.com'}>`
-    : process.env.EMAIL_FROM || '"BizFlow" <noreply@bizflow.com>';
-  
+
+  let fromAddress = from || null;
+
+  if (!fromAddress && fromName) {
+    const envFromAddress = parseEmailAddress(process.env.EMAIL_FROM) || process.env.EMAIL_USER;
+    if (envFromAddress) {
+      fromAddress = `"${fromName}" <${envFromAddress}>`;
+    }
+  }
+
+  if (!fromAddress) {
+    fromAddress = process.env.EMAIL_FROM || '"BizFlow" <noreply@bizflow.com>';
+  }
+
   const mailOptions = {
     from: fromAddress,
     to,
@@ -68,16 +93,15 @@ export const sendEmail = async ({ to, subject, text, html, replyTo, fromName }) 
     });
     console.error('Mail options', { to, subject });
 
-    // Retry once for transient failures
-    try {
-      console.log('🔁 Retrying email send once...');
-      const retryResult = await transporter.sendMail(mailOptions);
-      console.log(`✅ Email sent on retry to ${to} (subject: ${subject})`);
-      return retryResult;
-    } catch (retryError) {
-      console.error('❌ Retry email send failed:', retryError.message);
-      throw new Error(`Failed to send email: ${error.message}. Retry failed: ${retryError.message}`);
-    }
+    const transportError = new Error(`Failed to send email: ${error.message}`);
+    transportError.name = 'EmailTransportError';
+    transportError.code = error?.code || 'EMAIL_TRANSPORT_ERROR';
+    transportError.statusCode = error?.code === 'ETIMEDOUT' || error?.code === 'ESOCKET'
+      ? 504
+      : 502;
+    transportError.retryable = true;
+    transportError.isTimeout = error?.code === 'ETIMEDOUT' || error?.message?.toLowerCase().includes('timeout');
+    throw transportError;
   }
 };
 

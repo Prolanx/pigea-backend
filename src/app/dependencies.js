@@ -10,6 +10,7 @@ import CategoryModule from '@modules/category/_index.js';
 import ProductModule from '@modules/product/_index.js';
 import CrmModule from '@modules/crm/_index.js';
 import InboxModule from '@modules/inbox/_index.js';
+import MessageTemplateModule from '@modules/message-template/_index.js';
 import SocialModule from '@modules/social/_index.js';
 import MarketingModule from '@modules/marketing/_index.js';
 import BusinessInfoModule from '@modules/business-info/_index.js';
@@ -54,6 +55,10 @@ const StatusController = CrmModule.controller.StatusController;
 const InboxDAO = InboxModule.dao.InboxDAO;
 const InboxController = InboxModule.controller.InboxController;
 
+// message-template module
+const MessageTemplateDAO = MessageTemplateModule.dao.MessageTemplateDAO;
+const MessageTemplateController = MessageTemplateModule.controller.MessageTemplateController;
+
 // social module
 const SocialChannelDAO = SocialModule.dao.SocialChannelDAO;
 const SocialChannelController = SocialModule.controller.SocialChannelController;
@@ -86,6 +91,7 @@ export function createDependencies() {
   const contactDAO = new ContactDAO();
   const messageDAO = new MessageDAO();
   const statusDAO = new StatusDAO();
+  const messageTemplateDAO = new MessageTemplateDAO();
   const statDAO = null; // stats module deprecated
 
   // Services
@@ -148,6 +154,7 @@ export function createDependencies() {
     accountDAO
   );
   const statusController = new StatusController(statusDAO);
+  const messageTemplateController = new MessageTemplateController(messageTemplateDAO);
 
   // Controllers - Social
   const channelDAO = new SocialChannelDAO();
@@ -158,7 +165,7 @@ export function createDependencies() {
 
   // Controllers - Inbox
   const inboxDAO = new InboxDAO();
-  const inboxController = new InboxController(inboxDAO, accountDAO, emailAdapter, null); // socketAdapter injected later via inboxController.socketAdapter = io
+  const inboxController = new InboxController(inboxDAO, accountDAO, emailAdapter, null, contactDAO, contactTypeDAO); // socketAdapter injected later via inboxController.socketAdapter = io
 
   // Return organized dependencies
   return {
@@ -178,6 +185,7 @@ export function createDependencies() {
     marketing: { marketingController },
     businessInfo: { businessInfoController },
     inbox: { inboxController },
+    messageTemplate: { messageTemplateController },
     getInboxController: () => inboxController,
   };
 }
