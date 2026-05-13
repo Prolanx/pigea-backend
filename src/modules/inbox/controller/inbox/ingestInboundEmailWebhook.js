@@ -1,5 +1,6 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
+import { sanitizeInboundEmailText } from '@modules/inbox/utils/sanitize-inbound-email-text.util.js';
 
 /**
  * Ingest one or more inbound email items from a Brevo webhook payload.
@@ -81,6 +82,10 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
       });
 
       // Build normalized message payload
+      const normalizedBodyText =
+        sanitizeInboundEmailText(email.RawTextBody) ||
+        sanitizeInboundEmailText(email.ExtractedMarkdownMessage);
+
       const messageData = {
         merchantId: merchant._id,
         channelType: InboxConstants.CHANNEL.EMAIL,
@@ -96,7 +101,7 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
           displayName: r.Name || r.name || null,
         })),
         subject: email.Subject || null,
-        bodyText: email.RawTextBody || email.ExtractedMarkdownMessage || null,
+        bodyText: normalizedBodyText || null,
         bodyHtml: email.RawHtmlBody || null,
         attachments: (email.Attachments || []).map((a) => ({
           filename: a.Name || a.name || null,
