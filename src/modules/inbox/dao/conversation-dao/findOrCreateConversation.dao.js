@@ -2,10 +2,16 @@ import Conversation from '@database/models/Conversation.js';
 import { DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 import { generateTicketNumber } from '@modules/inbox/utils/ticket-number-generator.util.js';
+import { buildEmailThreadKeyCandidates } from '@modules/inbox/utils/email-thread-key.util.js';
 
 /**
- * Find an open conversation for a given threadKey + merchantId.
- * If none exists, create a new one with an auto-generated ticket number.
+ * Find the conversation for a given threadKey + merchantId.
+ *
+ * Rules:
+ * - Prefer an existing open conversation when one exists.
+ * - Otherwise reuse any existing conversation for the same thread.
+ * - Never auto-change conversation status here.
+ * - Create a new conversation only if none exists for the thread.
  *
  * @param {string} merchantId
  * @param {string} threadKey
@@ -15,15 +21,27 @@ import { generateTicketNumber } from '@modules/inbox/utils/ticket-number-generat
  */
 export async function findOrCreateConversation(merchantId, threadKey, channelType, customerInfo = {}) {
   try {
-    // Look for an existing open conversation for this thread
+    const threadKeyCandidates = buildEmailThreadKeyCandidates(threadKey);
+
+    // Prefer active conversations if present.
     const existing = await Conversation.findOne({
       merchantId,
-      threadKey,
       status: InboxConstants.CONVERSATION_STATUS.OPEN,
-    });
+      threadKey: { $in: threadKeyCandidates },
+    }).sort({ updatedAt: -1 });
 
     if (existing) {
       return existing;
+    }
+
+    // Reuse any existing conversation for this thread without changing status.
+    const existingAnyStatus = await Conversation.findOne({
+      merchantId,
+      threadKey: { $in: threadKeyCandidates },
+    }).sort({ updatedAt: -1 });
+
+    if (existingAnyStatus) {
+      return existingAnyStatus;
     }
 
     // No open conversation — create a new one with a fresh ticket number
@@ -32,7 +50,7 @@ export async function findOrCreateConversation(merchantId, threadKey, channelTyp
     const conversation = await Conversation.create({
       merchantId,
       channelType,
-      threadKey,
+      threadKey: threadKeyCandidates[0] || threadKey,
       ticketNumber,
       status: InboxConstants.CONVERSATION_STATUS.OPEN,
       lastMessageAt: new Date(),

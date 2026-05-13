@@ -1,6 +1,6 @@
 import Conversation from '@database/models/Conversation.js';
 import { DAOError } from '@common/errors.js';
-import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
+import { buildEmailThreadKeyCandidates } from '@modules/inbox/utils/email-thread-key.util.js';
 
 /**
  * Update the lastMessageAt timestamp on a conversation.
@@ -13,8 +13,10 @@ import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
  */
 export async function touchConversation(threadKey, merchantId, timestamp = new Date()) {
   try {
+    const threadKeyCandidates = buildEmailThreadKeyCandidates(threadKey);
+
     await Conversation.updateOne(
-      { threadKey, merchantId, status: InboxConstants.CONVERSATION_STATUS.OPEN },
+      { merchantId, threadKey: { $in: threadKeyCandidates } },
       { lastMessageAt: timestamp },
     );
   } catch (error) {

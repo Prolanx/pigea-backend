@@ -1,6 +1,7 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 import { sanitizeInboundEmailText } from '@modules/inbox/utils/sanitize-inbound-email-text.util.js';
+import { normalizeEmailThreadKey } from '@modules/inbox/utils/email-thread-key.util.js';
 
 /**
  * Ingest one or more inbound email items from a Brevo webhook payload.
@@ -38,7 +39,9 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
       const toAddress = email.To?.[0]?.Address || email.To?.[0]?.address;
       const fromAddress = email.From?.Address || email.From?.address;
       const fromName = email.From?.Name || email.From?.name || null;
-      const externalMessageId = email.MessageId || email.messageId || null;
+      const externalMessageId = normalizeEmailThreadKey(email.MessageId || email.messageId);
+      const inboundReplyTo = normalizeEmailThreadKey(email.InReplyTo || email.inReplyTo);
+      const requestedThreadKey = inboundReplyTo || externalMessageId;
 
       // Extract slug from local-part of inbound address
       // e.g. johns-bakery@pigea-inbox.prolanx.co → johns-bakery
@@ -50,6 +53,7 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
         fromAddress: fromAddress || null,
         inboxSlug,
         externalMessageId,
+        requestedThreadKey,
       });
 
       if (!inboxSlug) {
@@ -86,12 +90,24 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
         sanitizeInboundEmailText(email.RawTextBody) ||
         sanitizeInboundEmailText(email.ExtractedMarkdownMessage);
 
+      // Resolve the canonical conversation for this email thread first so
+      // new messages always use that conversation's thread key identity.
+      const conversation = await this.inboxDAO.findOrCreateConversation(
+        merchant._id,
+        requestedThreadKey,
+        InboxConstants.CHANNEL.EMAIL,
+        {
+          address: fromAddress || null,
+          displayName: fromName || null,
+        },
+      );
+
       const messageData = {
         merchantId: merchant._id,
         channelType: InboxConstants.CHANNEL.EMAIL,
         direction: InboxConstants.DIRECTION.INBOUND,
         externalMessageId,
-        threadKey: email.InReplyTo || email.inReplyTo || externalMessageId,
+        threadKey: conversation.threadKey,
         sender: {
           address: fromAddress || null,
           displayName: fromName,
@@ -139,17 +155,6 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
           externalMessageId,
         });
         ingested++;
-
-        // Find or create the conversation for this thread
-        const conversation = await this.inboxDAO.findOrCreateConversation(
-          merchant._id,
-          created.threadKey,
-          InboxConstants.CHANNEL.EMAIL,
-          {
-            address: fromAddress || null,
-            displayName: fromName || null,
-          },
-        );
 
         // Update lastMessageAt on the conversation
         await this.inboxDAO.touchConversation(
