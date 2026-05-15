@@ -50,6 +50,7 @@ const parseEmailAddress = (formattedAddress) => {
 };
 
 export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, from }) => {
+  console.log('[emailAdapter] sendEmail ENTRY', { to, subject, replyTo, fromName, from });
   const transporter = createTransporter();
 
   let fromAddress = from || null;
@@ -77,21 +78,37 @@ export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, fr
   if (replyTo) {
     mailOptions.replyTo = replyTo;
   }
-  
+
+  // Log transporter config and mail options before sending
+  console.log('[emailAdapter] Transporter config', {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM,
+    secure: process.env.EMAIL_SECURE,
+    timeouts: {
+      connectionTimeout: process.env.SMTP_TIMEOUT_MS,
+      greetingTimeout: process.env.SMTP_TIMEOUT_MS,
+      socketTimeout: process.env.SMTP_TIMEOUT_MS,
+      dnsTimeout: process.env.SMTP_TIMEOUT_MS,
+    },
+  });
+  console.log('[emailAdapter] Mail options', mailOptions);
+
   try {
     const result = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${to} (subject: ${subject})`);
+    console.log(`[emailAdapter] SUCCESS: Email sent to ${to} (subject: ${subject})`, { result });
     return result;
   } catch (error) {
-    console.error('❌ Email transport error:', error.message);
-    console.error('SMTP config', {
+    console.error('[emailAdapter] ERROR: Email transport error', { message: error.message, code: error.code, stack: error.stack });
+    console.error('[emailAdapter] SMTP config', {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       user: process.env.EMAIL_USER,
       from: process.env.EMAIL_FROM,
       secure: process.env.EMAIL_SECURE
     });
-    console.error('Mail options', { to, subject });
+    console.error('[emailAdapter] Mail options', { to, subject });
 
     const transportError = new Error(`Failed to send email: ${error.message}`);
     transportError.name = 'EmailTransportError';

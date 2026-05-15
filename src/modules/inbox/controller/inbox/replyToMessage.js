@@ -20,22 +20,27 @@ function renderReplyBody(templateText, { companyName, customerName }) {
  */
 export async function replyToMessage(messageId, merchantId, payload = {}) {
   try {
+    console.log('[replyToMessage] ENTRY', { messageId, merchantId, payload });
     const original = await this.inboxDAO.findById(messageId, merchantId);
     if (!original) {
+      console.error('[replyToMessage] Original message not found', { messageId, merchantId });
       throw new ControllerError(InboxConstants.ERRORS.MESSAGE_NOT_FOUND, 404);
     }
 
     if (original.channelType !== InboxConstants.CHANNEL.EMAIL) {
+      console.error('[replyToMessage] Not an email channel', { channelType: original.channelType });
       throw new ControllerError(InboxConstants.ERRORS.REPLY_ONLY_EMAIL, 400);
     }
 
     const recipientEmail = original.sender?.address || null;
     if (!recipientEmail) {
+      console.error('[replyToMessage] No recipient email found', { original });
       throw new ControllerError(InboxConstants.ERRORS.REPLY_EMAIL_REQUIRED, 400);
     }
 
     const merchant = await this.accountDAO.findById(merchantId);
     if (!merchant) {
+      console.error('[replyToMessage] Merchant not found', { merchantId });
       throw new ControllerError(InboxConstants.ERRORS.REPLY_MERCHANT_NOT_FOUND, 404);
     }
 
@@ -52,6 +57,7 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
     ).trim() || null;
 
     if (!emailChannelAddress) {
+      console.error('[replyToMessage] No merchant inbox address found', { original });
       throw new ControllerError(
         'Email reply cannot be sent because the merchant inbox address could not be resolved.',
         400,
@@ -59,7 +65,6 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
     }
 
     const companyName = merchantBusinessName || merchantFromName;
-
     const customerName =
       String(original.sender?.displayName || '').trim() ||
       String(original.sender?.address || '').trim() ||
@@ -69,8 +74,15 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       companyName,
       customerName,
     }).trim();
-
     const bodyHtml = bodyText.replace(/\n/g, '<br>');
+
+    // Log before sending email
+    console.log('[replyToMessage] SENDING EMAIL', {
+      to: recipientEmail,
+      subject,
+      replyTo: emailChannelAddress,
+      from: `"${merchantFromName}" <${emailChannelAddress}>`,
+    });
 
     await this.emailAdapter.sendEmail({
       to: recipientEmail,
@@ -128,6 +140,7 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       await this.inboxDAO.touchConversation(created.threadKey, merchantId, created.receivedAt);
     }
 
+    console.log('[replyToMessage] SUCCESS', { messageId, merchantId, replyId: created?._id });
     return {
       id: created?._id,
       threadKey: created?.threadKey,
@@ -139,6 +152,7 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       sentAt: created?.createdAt,
     };
   } catch (error) {
+    console.error('[replyToMessage] ERROR', { error: error?.message, stack: error?.stack });
     if (error instanceof DAOError || error instanceof ControllerError) {
       throw error;
     }
