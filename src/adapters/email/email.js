@@ -1,3 +1,4 @@
+import dns from 'node:dns/promises';
 import nodemailer from 'nodemailer';
 
 /**
@@ -11,25 +12,27 @@ import nodemailer from 'nodemailer';
  */
 const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 15000);
 
+const SMTP_CONFIG = {
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT || 587),
+  secure: parseBoolean(process.env.EMAIL_SECURE, false),
+  connectionTimeout: SMTP_TIMEOUT_MS,
+  greetingTimeout: SMTP_TIMEOUT_MS,
+  socketTimeout: SMTP_TIMEOUT_MS,
+  dnsTimeout: SMTP_TIMEOUT_MS,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+};
+
 const parseBoolean = (value, fallback = false) => {
   if (value === undefined || value === null || value === '') return fallback;
   return String(value).toLowerCase() === 'true';
 };
 
 const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: Number(process.env.EMAIL_PORT || 587),
-    secure: parseBoolean(process.env.EMAIL_SECURE, false),
-    connectionTimeout: SMTP_TIMEOUT_MS,
-    greetingTimeout: SMTP_TIMEOUT_MS,
-    socketTimeout: SMTP_TIMEOUT_MS,
-    dnsTimeout: SMTP_TIMEOUT_MS,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+  return nodemailer.createTransport(SMTP_CONFIG);
 };
 
 /**
@@ -50,7 +53,39 @@ const parseEmailAddress = (formattedAddress) => {
 };
 
 export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, from }) => {
+  const startedAt = Date.now();
   console.log('[emailAdapter] sendEmail ENTRY', { to, subject, replyTo, fromName, from });
+  console.log('[emailAdapter] SMTP effective config', {
+    host: SMTP_CONFIG.host,
+    port: SMTP_CONFIG.port,
+    secure: SMTP_CONFIG.secure,
+    timeouts: {
+      connectionTimeout: SMTP_CONFIG.connectionTimeout,
+      greetingTimeout: SMTP_CONFIG.greetingTimeout,
+      socketTimeout: SMTP_CONFIG.socketTimeout,
+      dnsTimeout: SMTP_CONFIG.dnsTimeout,
+    },
+    authUserSet: Boolean(SMTP_CONFIG.auth.user),
+    authPassSet: Boolean(SMTP_CONFIG.auth.pass),
+  });
+
+  try {
+    const dnsStartedAt = Date.now();
+    const resolvedHosts = await dns.lookup(SMTP_CONFIG.host, { all: true });
+    console.log('[emailAdapter] DNS lookup success', {
+      host: SMTP_CONFIG.host,
+      addresses: resolvedHosts,
+      durationMs: Date.now() - dnsStartedAt,
+    });
+  } catch (error) {
+    console.error('[emailAdapter] DNS lookup failed', {
+      host: SMTP_CONFIG.host,
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+    });
+  }
+
   const transporter = createTransporter();
 
   let fromAddress = from || null;
@@ -86,18 +121,32 @@ export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, fr
     user: process.env.EMAIL_USER,
     from: process.env.EMAIL_FROM,
     secure: process.env.EMAIL_SECURE,
-    timeouts: {
-      connectionTimeout: process.env.SMTP_TIMEOUT_MS,
-      greetingTimeout: process.env.SMTP_TIMEOUT_MS,
-      socketTimeout: process.env.SMTP_TIMEOUT_MS,
-      dnsTimeout: process.env.SMTP_TIMEOUT_MS,
-    },
+    effectiveTimeoutMs: SMTP_TIMEOUT_MS,
   });
   console.log('[emailAdapter] Mail options', mailOptions);
 
   try {
+    const verifyStartedAt = Date.now();
+    await transporter.verify();
+    console.log('[emailAdapter] Transport verify success', {
+      durationMs: Date.now() - verifyStartedAt,
+    });
+  } catch (error) {
+    console.error('[emailAdapter] Transport verify failed', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+    });
+  }
+
+  try {
+    const sendStartedAt = Date.now();
     const result = await transporter.sendMail(mailOptions);
-    console.log(`[emailAdapter] SUCCESS: Email sent to ${to} (subject: ${subject})`, { result });
+    console.log(`[emailAdapter] SUCCESS: Email sent to ${to} (subject: ${subject})`, {
+      durationMs: Date.now() - sendStartedAt,
+      result,
+      totalDurationMs: Date.now() - startedAt,
+    });
     return result;
   } catch (error) {
     console.error('[emailAdapter] ERROR: Email transport error', { message: error.message, code: error.code, stack: error.stack });
@@ -118,6 +167,8 @@ export const sendEmail = async ({ to, subject, text, html, replyTo, fromName, fr
       : 502;
     transportError.retryable = true;
     transportError.isTimeout = error?.code === 'ETIMEDOUT' || error?.message?.toLowerCase().includes('timeout');
+    transportError.smtpHost = SMTP_CONFIG.host;
+    transportError.smtpPort = SMTP_CONFIG.port;
     throw transportError;
   }
 };
