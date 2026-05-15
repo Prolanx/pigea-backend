@@ -1,6 +1,7 @@
 import { common } from '@common/_index.js';
 import { constants } from '@modules/auth/constants/_index.js';
 import { sanitizeAccount } from '@common/utilities/sanitizeAccount.js';
+import { buildVerificationEmail } from '@modules/auth/utils/email-templates.js';
 
 const { ControllerError, DAOError } = common.errors;
 const { ResponseUtils } = common.utilities;
@@ -46,7 +47,7 @@ export async function login(email, password) {
           verificationTokenSentAt: new Date(),
         });
 
-        await this.emailAdapter.sendVerificationEmail(email, verificationToken);
+        await this.emailAdapter.sendEmail(buildVerificationEmail(email, verificationToken));
 
         return ResponseUtils.success(AuthConstants.ERRORS.VERIFICATION_EXPIRED, {
           requiresVerification: true,

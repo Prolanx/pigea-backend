@@ -1,5 +1,6 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
+import { normalizeEmailThreadKey } from '@modules/inbox/utils/email-thread-key.util.js';
 
 function renderReplyBody(templateText, { companyName, customerName }) {
   return String(templateText || '')
@@ -84,7 +85,7 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       from: `"${merchantFromName}" <${emailChannelAddress}>`,
     });
 
-    await this.emailAdapter.sendEmail({
+    const sendResult = await this.emailAdapter.sendEmail({
       to: recipientEmail,
       subject,
       text: bodyText,
@@ -93,13 +94,17 @@ export async function replyToMessage(messageId, merchantId, payload = {}) {
       from: `"${merchantFromName}" <${emailChannelAddress}>`,
     });
 
+    // Capture the provider-assigned Message-ID so customer replies can be
+    // threaded back to this conversation via the InReplyTo webhook field.
+    const outboundMessageId = normalizeEmailThreadKey(sendResult?.messageId || null);
+
     const templateMetadata = payload.template || {};
 
     const created = await this.inboxDAO.createMessage({
       merchantId,
       channelType: InboxConstants.CHANNEL.EMAIL,
       direction: InboxConstants.DIRECTION.OUTBOUND,
-      externalMessageId: null,
+      externalMessageId: outboundMessageId || null,
       threadKey: original.threadKey || original.externalMessageId || null,
       sender: {
         address: emailChannelAddress,

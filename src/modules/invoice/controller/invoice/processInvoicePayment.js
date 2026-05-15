@@ -1,6 +1,5 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { verifyTransactionStatus } from '@adapters/payment/payment.js';
-import { sendEmail } from '@adapters/email/email.js';
 import { buildInvoiceReceiptData } from '@modules/invoice/utils/build-receipt-data.util.js';
 import { generateInvoiceReceiptTemplate } from '@modules/invoice/utils/email-templates/invoice-receipt-template.js';
 import { buildInvoiceErrorReceiptData } from '@modules/invoice/utils/build-error-receipt-data.util.js';
@@ -72,7 +71,7 @@ export async function processInvoicePaymentAction(controller, paymentData) {
       const receiptData = buildInvoiceReceiptData(updatedInvoice, transaction);
       const receiptHtml = generateInvoiceReceiptTemplate(receiptData);
 
-      await sendEmail({
+      await controller.emailAdapter.sendEmail({
         to: updatedInvoice.customerEmail,
         subject: `Invoice ${updatedInvoice.invoiceNumber} Receipt`,
         text: `Your payment for invoice ${updatedInvoice.invoiceNumber} was successful.`,
@@ -84,7 +83,7 @@ export async function processInvoicePaymentAction(controller, paymentData) {
       const errorData = buildInvoiceErrorReceiptData(updatedInvoice, transaction, 'Your payment could not be completed.');
       const errorHtml = generateInvoicePaymentErrorTemplate(errorData);
 
-      await sendEmail({
+      await controller.emailAdapter.sendEmail({
         to: updatedInvoice.customerEmail,
         subject: `Invoice ${updatedInvoice.invoiceNumber} Payment Failed`,
         text: `Your payment for invoice ${updatedInvoice.invoiceNumber} failed.`,

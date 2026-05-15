@@ -1,6 +1,7 @@
 import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 import { sanitizeInboundEmailText } from '@modules/inbox/utils/sanitize-inbound-email-text.util.js';
+import { sanitizeInboundEmailHtml } from '@modules/inbox/utils/sanitize-inbound-email-html.util.js';
 import { normalizeEmailThreadKey } from '@modules/inbox/utils/email-thread-key.util.js';
 
 /**
@@ -90,11 +91,28 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
         sanitizeInboundEmailText(email.RawTextBody) ||
         sanitizeInboundEmailText(email.ExtractedMarkdownMessage);
 
+      // If this email is a reply to a message we sent (InReplyTo matches a
+      // stored outbound externalMessageId), use that message's threadKey so
+      // the customer's reply continues the same conversation thread rather
+      // than creating a new one.
+      let resolvedThreadKey = requestedThreadKey;
+      if (inboundReplyTo) {
+        const linkedMessage = await this.inboxDAO.findByExternalId(merchant._id, inboundReplyTo);
+        if (linkedMessage?.threadKey) {
+          resolvedThreadKey = linkedMessage.threadKey;
+          logIngest('Resolved threadKey via linked outbound message', {
+            itemIndex: index,
+            inboundReplyTo,
+            resolvedThreadKey,
+          });
+        }
+      }
+
       // Resolve the canonical conversation for this email thread first so
       // new messages always use that conversation's thread key identity.
       const conversation = await this.inboxDAO.findOrCreateConversation(
         merchant._id,
-        requestedThreadKey,
+        resolvedThreadKey,
         InboxConstants.CHANNEL.EMAIL,
         {
           address: fromAddress || null,
@@ -118,7 +136,7 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
         })),
         subject: email.Subject || null,
         bodyText: normalizedBodyText || null,
-        bodyHtml: email.RawHtmlBody || null,
+        bodyHtml: sanitizeInboundEmailHtml(email.RawHtmlBody) || null,
         attachments: (email.Attachments || []).map((a) => ({
           filename: a.Name || a.name || null,
           url: a.DownloadToken || a.downloadToken || null,

@@ -70,9 +70,8 @@ const MarketingController = MarketingModule.controller.MarketingController;
 // business info module
 const BusinessInfoController = BusinessInfoModule.controller.BusinessInfoController;
 import * as passwordAdapter from '@adapters/password/password.js';
-import * as brevoAdapter from '@adapters/brevo/brevo.js';
 import * as jwtAdapter from '@adapters/jwt/jwt.js';
-import * as emailAdapter from '@adapters/email/email.js';
+import * as emailAdapter from '@adapters/brevo/brevo.js';
 
 /**
  * Creates and returns all application dependencies
@@ -161,7 +160,7 @@ export function createDependencies() {
   const socialChannelController = new SocialChannelController(channelDAO, oauthAdapter);
 
   // Controllers - Marketing
-  const marketingController = new MarketingController(brevoAdapter);
+  const marketingController = new MarketingController(emailAdapter);
 
   // Controllers - Inbox
   const inboxDAO = new InboxDAO();

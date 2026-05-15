@@ -51,7 +51,7 @@ export async function createOrUpdateContact({ email, listIds = [], attributes = 
   }
 }
 
-export async function sendTransactionalEmail({ sender, to = [], subject, htmlContent, textContent, cc = [], bcc = [] }) {
+export async function sendTransactionalEmail({ sender, to = [], subject, htmlContent, textContent, cc = [], bcc = [], replyTo = null }) {
   if (!sender || !sender.email) throw Object.assign(new Error('Sender email is required'), { status: 400 });
   if (!Array.isArray(to) || to.length === 0) throw Object.assign(new Error('Recipient (to) is required'), { status: 400 });
 
@@ -62,6 +62,10 @@ export async function sendTransactionalEmail({ sender, to = [], subject, htmlCon
     htmlContent,
     textContent
   };
+
+  if (replyTo) {
+    payload.replyTo = { email: replyTo };
+  }
 
   // Only include cc/bcc when present to avoid Brevo validation errors
   if (Array.isArray(cc) && cc.length > 0) {
@@ -95,6 +99,68 @@ export async function sendTransactionalEmail({ sender, to = [], subject, htmlCon
     normalizeAxiosError(err);
   }
 }
+
+/**
+ * Send email (Nodemailer-compatible interface)
+ * Wraps sendTransactionalEmail and translates Nodemailer signature to Brevo format.
+ * 
+ * @param {Object} options
+ * @param {string} options.to - Recipient email address
+ * @param {string} options.subject - Email subject
+ * @param {string} options.text - Plain text content
+ * @param {string} options.html - HTML content
+ * @param {string} [options.from] - Full 'Name <email>' formatted address or just email
+ * @param {string} [options.fromName] - Display name for sender
+ * @param {string} [options.replyTo] - Reply-to address (note: Brevo may not support this natively)
+ * @returns {Promise<Object>} Brevo send result
+ */
+export async function sendEmail({ to, subject, text, html, from, fromName, replyTo }) {
+  if (!to) throw Object.assign(new Error('Recipient email is required'), { status: 400 });
+  if (!subject) throw Object.assign(new Error('Subject is required'), { status: 400 });
+
+  // Parse sender info from 'from' parameter (e.g., "Name <email@address>" or just "email@address")
+  let senderEmail = null;
+  let senderName = fromName || null;
+
+  if (from) {
+    const match = from.match(/<([^>]+)>/);
+    senderEmail = match ? match[1].trim() : from.trim();
+    if (!senderName) {
+      // Extract name from "Name <email>" format if available
+      const nameMatch = from.match(/^([^<]*)<[^>]+>$/);
+      if (nameMatch) {
+        senderName = nameMatch[1].trim();
+      }
+    }
+  }
+
+  // Fallback to env config if from is not provided
+  if (!senderEmail) {
+    senderEmail = parseEmailAddress(process.env.EMAIL_FROM) || process.env.BREVO_SENDER_EMAIL || 'noreply@example.com';
+    if (!senderName) {
+      senderName = process.env.BREVO_SENDER_NAME || 'BizFlow';
+    }
+  }
+
+  // Call sendTransactionalEmail with translated parameters
+  return sendTransactionalEmail({
+    sender: {
+      name: senderName,
+      email: senderEmail
+    },
+    to: [to], // Convert single string to array
+    subject,
+    htmlContent: html,
+    textContent: text,
+    replyTo: replyTo || null,
+  });
+}
+
+const parseEmailAddress = (formattedAddress) => {
+  if (!formattedAddress || typeof formattedAddress !== 'string') return null;
+  const match = formattedAddress.match(/<([^>]+)>/);
+  return match ? match[1].trim() : formattedAddress.trim();
+};
 
 // --- Example SDK usage (commented for reference) ---
 // import Brevo from '@getbrevo/brevo';

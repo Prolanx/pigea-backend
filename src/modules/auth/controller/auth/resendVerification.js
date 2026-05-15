@@ -1,5 +1,6 @@
 import { common } from '@common/_index.js';
 import { constants } from '@modules/auth/constants/_index.js';
+import { buildVerificationEmail } from '@modules/auth/utils/email-templates.js';
 
 const { ControllerError, DAOError } = common.errors;
 const { ResponseUtils } = common.utilities;
@@ -44,7 +45,7 @@ export async function resendVerification(email) {
       verificationTokenSentAt: now,
     });
 
-    await this.emailAdapter.sendVerificationEmail(email, verificationToken);
+    await this.emailAdapter.sendEmail(buildVerificationEmail(email, verificationToken));
 
     // Return the exact timestamp when the token was sent
     return ResponseUtils.success(AuthConstants.SUCCESS.VERIFICATION_RESENT, { tokenSentAt: now.toISOString() });

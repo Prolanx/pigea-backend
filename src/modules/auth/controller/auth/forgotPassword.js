@@ -1,5 +1,6 @@
 import { common } from '@common/_index.js';
 import { constants } from '@modules/auth/constants/_index.js';
+import { buildPasswordResetEmail } from '@modules/auth/utils/email-templates.js';
 
 const { ControllerError, DAOError } = common.errors;
 const { ResponseUtils } = common.utilities;
@@ -37,7 +38,7 @@ export async function forgotPassword(email) {
     await this.accountDAO.setPasswordResetToken(email, resetToken, resetTokenExpiry);
 
     try {
-      await this.emailAdapter.sendPasswordResetEmail(email, resetToken);
+      await this.emailAdapter.sendEmail(buildPasswordResetEmail(email, resetToken));
     } catch (emailError) {
       console.error(emailError);
     }
