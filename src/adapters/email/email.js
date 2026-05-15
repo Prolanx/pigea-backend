@@ -12,6 +12,11 @@ import nodemailer from 'nodemailer';
  */
 const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 15000);
 
+const parseBoolean = (value, fallback = false) => {
+  if (value === undefined || value === null || value === '') return fallback;
+  return String(value).toLowerCase() === 'true';
+};
+
 const SMTP_CONFIG = {
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: Number(process.env.EMAIL_PORT || 587),
@@ -24,11 +29,6 @@ const SMTP_CONFIG = {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
-};
-
-const parseBoolean = (value, fallback = false) => {
-  if (value === undefined || value === null || value === '') return fallback;
-  return String(value).toLowerCase() === 'true';
 };
 
 const createTransporter = () => {
