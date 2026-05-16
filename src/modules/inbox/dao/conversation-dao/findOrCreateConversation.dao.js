@@ -8,10 +8,10 @@ import { buildEmailThreadKeyCandidates } from '@modules/inbox/utils/email-thread
  * Find the conversation for a given threadKey + merchantId.
  *
  * Rules:
- * - Prefer an existing open conversation when one exists.
- * - Otherwise reuse any existing conversation for the same thread.
- * - Never auto-change conversation status here.
- * - Create a new conversation only if none exists for the thread.
+ * - Reuse an existing OPEN conversation when one exists.
+ * - Never auto-reopen resolved conversations.
+ * - If only resolved conversations exist for this thread identity,
+ *   start a fresh conversation with a new thread key namespace.
  *
  * @param {string} merchantId
  * @param {string} threadKey
@@ -22,6 +22,7 @@ import { buildEmailThreadKeyCandidates } from '@modules/inbox/utils/email-thread
 export async function findOrCreateConversation(merchantId, threadKey, channelType, customerInfo = {}) {
   try {
     const threadKeyCandidates = buildEmailThreadKeyCandidates(threadKey);
+    const canonicalThreadKey = threadKeyCandidates[0] || threadKey;
 
     // Prefer active conversations if present.
     const existing = await Conversation.findOne({
@@ -34,22 +35,14 @@ export async function findOrCreateConversation(merchantId, threadKey, channelTyp
       return existing;
     }
 
-    // Reuse any existing conversation for this thread.
-    // If the conversation was resolved, reopen it — a new inbound message
-    // from the customer means the issue needs attention again.
+    // Detect whether this thread identity was seen before but is now resolved.
+    // In that case, start a NEW conversation instead of reopening the old one.
     const existingAnyStatus = await Conversation.findOne({
       merchantId,
       threadKey: { $in: threadKeyCandidates },
     }).sort({ updatedAt: -1 });
 
-    if (existingAnyStatus) {
-      if (existingAnyStatus.status === InboxConstants.CONVERSATION_STATUS.RESOLVED) {
-        existingAnyStatus.status = InboxConstants.CONVERSATION_STATUS.OPEN;
-        existingAnyStatus.resolvedAt = null;
-        await existingAnyStatus.save();
-      }
-      return existingAnyStatus;
-    }
+    const hasResolvedHistory = Boolean(existingAnyStatus);
 
     // No open conversation — create a new one with a fresh ticket number
     const ticketNumber = await generateTicketNumber(String(merchantId));
@@ -57,7 +50,9 @@ export async function findOrCreateConversation(merchantId, threadKey, channelTyp
     const conversation = await Conversation.create({
       merchantId,
       channelType,
-      threadKey: threadKeyCandidates[0] || threadKey,
+      threadKey: hasResolvedHistory
+        ? `${canonicalThreadKey}::reopen-${Date.now()}`
+        : canonicalThreadKey,
       ticketNumber,
       status: InboxConstants.CONVERSATION_STATUS.OPEN,
       lastMessageAt: new Date(),

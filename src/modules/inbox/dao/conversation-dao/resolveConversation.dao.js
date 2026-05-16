@@ -3,7 +3,7 @@ import { DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 
 /**
- * Resolve a conversation — sets status to 'resolved' and records resolvedAt.
+ * Toggle a conversation between open and resolved.
  *
  * @param {string} id - Conversation _id
  * @param {string} merchantId
@@ -11,14 +11,19 @@ import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
  */
 export async function resolveConversation(id, merchantId) {
   try {
-    return await Conversation.findOneAndUpdate(
-      { _id: id, merchantId },
-      {
-        status: InboxConstants.CONVERSATION_STATUS.RESOLVED,
-        resolvedAt: new Date(),
-      },
-      { new: true, runValidators: true },
-    );
+    const conversation = await Conversation.findOne({ _id: id, merchantId });
+    if (!conversation) return null;
+
+    if (conversation.status === InboxConstants.CONVERSATION_STATUS.RESOLVED) {
+      conversation.status = InboxConstants.CONVERSATION_STATUS.OPEN;
+      conversation.resolvedAt = null;
+    } else {
+      conversation.status = InboxConstants.CONVERSATION_STATUS.RESOLVED;
+      conversation.resolvedAt = new Date();
+    }
+
+    await conversation.save();
+    return conversation;
   } catch (error) {
     throw new DAOError(`${InboxConstants.DB_ERRORS.CONVERSATION_UPDATE_FAILED}: ${error.message}`);
   }

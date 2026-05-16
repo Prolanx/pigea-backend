@@ -2,7 +2,7 @@ import { ControllerError, DAOError } from '@common/errors.js';
 import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
 
 /**
- * Resolve a conversation — closes the ticket.
+ * Toggle a conversation status (open <-> resolved).
  * Emits a real-time event to the merchant's socket room.
  *
  * @this {InboxController}
@@ -17,10 +17,6 @@ export async function resolveConversation(conversationId, merchantId) {
       throw new ControllerError(InboxConstants.ERRORS.CONVERSATION_NOT_FOUND, 404);
     }
 
-    if (conversation.status === InboxConstants.CONVERSATION_STATUS.RESOLVED) {
-      throw new ControllerError(InboxConstants.ERRORS.CONVERSATION_ALREADY_RESOLVED, 400);
-    }
-
     const resolved = await this.inboxDAO.resolveConversation(conversationId, merchantId);
 
     // Emit real-time event
@@ -29,6 +25,7 @@ export async function resolveConversation(conversationId, merchantId) {
         conversationId: String(resolved._id),
         ticketNumber: resolved.ticketNumber,
         threadKey: resolved.threadKey,
+        status: resolved.status,
         resolvedAt: resolved.resolvedAt,
       });
     }

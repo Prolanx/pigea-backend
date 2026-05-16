@@ -68,7 +68,7 @@ function createInboxConversationRoutes(controller) {
       try {
         const result = await controller.resolveConversation(req.params.id, req.user.accountId);
         return res.status(200).json(
-          ResponseUtils.success(InboxConstants.SUCCESS.CONVERSATION_RESOLVED, result)
+          ResponseUtils.success(InboxConstants.SUCCESS.CONVERSATION_STATUS_UPDATED, result)
         );
       } catch (error) {
         return res.status(getRouteErrorStatusCode(error)).json(
