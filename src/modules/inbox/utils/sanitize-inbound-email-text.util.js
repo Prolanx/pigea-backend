@@ -14,19 +14,39 @@ export function sanitizeInboundEmailText(rawText) {
   if (!input.trim()) return null;
 
   const lines = input.split('\n');
+
+  // Some clients fold the reply header across lines:
+  // "On Fri ... <" + "person@example.com> wrote:".
+  // Merge those lines so quote-start detection remains reliable.
+  const unfoldedLines = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const current = lines[index];
+    const next = lines[index + 1];
+    if (
+      next &&
+      /<\s*$/.test(current) &&
+      /^\s*[^\s@<>]+@[^\s@<>]+>\s*wrote:\s*$/i.test(next)
+    ) {
+      unfoldedLines.push(`${current}${next.trim()}`);
+      index += 1;
+      continue;
+    }
+    unfoldedLines.push(current);
+  }
+
   const quoteStartPatterns = [
     /^\s*On\s.+\swrote:\s*$/i,
     /^\s*-{2,}\s*Original Message\s*-{2,}\s*$/i,
     /^\s*From:\s.+$/i,
   ];
 
-  const quoteStartIndex = lines.findIndex((line) =>
+  const quoteStartIndex = unfoldedLines.findIndex((line) =>
     quoteStartPatterns.some((pattern) => pattern.test(line)),
   );
 
   const cleanedLines = quoteStartIndex >= 0
-    ? lines.slice(0, quoteStartIndex)
-    : lines;
+    ? unfoldedLines.slice(0, quoteStartIndex)
+    : unfoldedLines;
 
   const cleaned = cleanedLines.join('\n').trim();
   if (cleaned) return cleaned;

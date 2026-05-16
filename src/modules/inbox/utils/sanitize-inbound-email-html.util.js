@@ -18,6 +18,24 @@ export function sanitizeInboundEmailHtml(rawHtml) {
 
   let html = rawHtml;
 
+  // Most clients append quoted history after a known quote marker/container.
+  // Truncate from the first such marker to preserve only the newest message.
+  const quoteMarkerPatterns = [
+    /<div\b[^>]*class="[^"]*gmail_quote[^"]*"[^>]*>/i,
+    /<blockquote\b/i,
+    /<div\b[^>]*id="divRplyFwdMsg"[^>]*>/i,
+    /<div\b[^>]*class="[^"]*yahoo_quoted[^"]*"[^>]*>/i,
+  ];
+
+  const quoteMarkerIndexes = quoteMarkerPatterns
+    .map((pattern) => html.search(pattern))
+    .filter((index) => index >= 0);
+
+  if (quoteMarkerIndexes.length > 0) {
+    const firstQuoteMarkerIndex = Math.min(...quoteMarkerIndexes);
+    html = html.slice(0, firstQuoteMarkerIndex);
+  }
+
   // 1. Iteratively remove <blockquote> blocks (nested quotes from thread chains
   //    require multiple passes — each pass peels one nesting level).
   let previous;

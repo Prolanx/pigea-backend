@@ -88,8 +88,8 @@ export async function ingestInboundEmailWebhook(items, traceContext = {}) {
 
       // Build normalized message payload
       const normalizedBodyText =
-        sanitizeInboundEmailText(email.RawTextBody) ||
-        sanitizeInboundEmailText(email.ExtractedMarkdownMessage);
+        sanitizeInboundEmailText(email.ExtractedMarkdownMessage) ||
+        sanitizeInboundEmailText(email.RawTextBody);
 
       // If this email is a reply to a message we sent (InReplyTo matches a
       // stored outbound externalMessageId), use that message's threadKey so
