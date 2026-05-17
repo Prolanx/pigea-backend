@@ -15,11 +15,15 @@ import { InboxConstants } from '@modules/inbox/constants/inbox.constants.js';
  */
 export async function listConversationsByMerchant(merchantId, options = {}) {
   try {
-    const { status = InboxConstants.CONVERSATION_STATUS.OPEN, channelType } = options;
+    const { status, channelType } = options;
 
     const query = { merchantId };
-    if (status) query.status = status;
-    if (channelType) query.channelType = channelType;
+    if (status !== undefined && status !== null && status !== 'null') {
+      query.status = status;
+    }
+    if (channelType !== undefined && channelType !== null && channelType !== 'null') {
+      query.channelType = channelType;
+    }
 
     const conversations = await Conversation.find(query)
       .sort({ lastMessageAt: -1 });
